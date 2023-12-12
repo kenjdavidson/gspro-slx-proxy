@@ -1,12 +1,12 @@
 {
-    "name": "electron-fluent-ui",
-    "description": "Quickstart repository for electron applications using Fluent UI React",
+    "name": "gspro-slx-proxy",
+    "description": "Proxy communication between SLX and GSPro",    
     "version": "3.3.0",
     "license": "MIT",
     "author": {
-        "email": "oliver.schwendener@proton.me",
-        "name": "Oliver Schwendener",
-        "url": "https://github.com/oliverschwendener"
+        "email": "ken.j.davidson@live.ca",
+        "name": "Ken Davidson",
+        "url": "https://github.com/kenjdavidson"
     },
     "main": "dist-main/index.js",
     "scripts": {
@@ -16,6 +16,7 @@
         "package:publish": "electron-builder --config electron-builder.config.js --publish always",
         "package": "electron-builder --config electron-builder.config.js",
         "prettier:check": "prettier --check -- src/**/*.{ts,tsx}",
+        "prettier": "prettier -- src/**/*.{ts,tsx}",
         "test:coverage": "vitest run --root=src --coverage",
         "test:watch": "vitest --root=src",
         "test": "vitest run --root=src",

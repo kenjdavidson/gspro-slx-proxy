@@ -1,39 +1,51 @@
-# Electron + Fluent UI React
+# GSPro SLX Proxy
 
-This is a repo to quickly start the development of an electron application with [Fluent UI React](https://react.fluentui.dev/).
+To resolve some issues and provide some features this application can be configured to act as a proxy between the [SLX Connect](https://support.swinglogic.us/hc/en-us) and [GSPConnector](https://gsprogolf.com/GSProConnectV1.html).
 
-![example-image.png](docs/example-image.png)
+## Primary Issue
+
+The primary issue is that during game play, after selecting a new club, the SLX Connect widget sends an invalid `BallData`/`ClubData` message to GSPro, in doing so, GSPro will ignore the message and send a reset connect message back to the SLX. This reset method will reset the club selection to the originally provided club.
+
+### Example
+
+This issue pops up:
+
+-   Playing a hole (170 yards) GSPro initial message states the club is `5 iron`.
+-   Attempt to select a new club, `6 iron` for example.
+-   GSPro will reset the club selection back to `5 iron`.
+
+> Some club changes work, the issue is more prevelant on par 3s for some reason.
 
 ## Development
 
--   Install dependencies
+### Install dependencies
 
-    ```
-    $ pnpm install
-    ```
+```
+$ npm install
+```
 
--   Run app in dev mode
+### Run app in dev mode
 
-    ```
-    $ pnpm dev
-    ```
+```
+$ npm run dev
+```
 
--   Lint files
+### Lint files
 
-    ```
-    $ pnpm lint
-    ```
+```
+$ npm run lint
+```
 
--   Perform typecheck
+### Perform typecheck
 
-    ```
-    $ pnpm typecheck:main
-    $ pnpm typecheck:preload
-    $ pnpm typecheck:renderer
-    ```
+```
+$ npm run typecheck:main
+$ npm run typecheck:preload
+$ npm run typecheck:renderer
+```
 
--   Build and package app
+### Build and package app
 
-    ```
-    $ pnpm build && pnpm package
-    ```
+```
+$ npm build && pnpm package
+```
