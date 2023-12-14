@@ -1,5 +1,5 @@
 import { Socket } from 'net';
-import { EventEmitter } from 'stream';
+import { EventEmitter } from 'node:events';
 import { ConnectionStatus } from './ConnectionStatus';
 import { GsproConnectionEvent } from './GsproConnection';
 

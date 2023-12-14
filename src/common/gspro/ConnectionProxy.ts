@@ -6,20 +6,6 @@ import { ConnectionStatus, ConnectionStatusEvent } from './ConnectionStatus';
 import { MonitorToGSConnect } from './MonitorEvent';
 import { GSConnectToMonitor } from './GsproEvent';
 
-export type ConnectionProxyConfig = {
-    gsproConnectionPort: number;
-    gsproConnectionAddress: string;
-    monitorConnectionPort: number;
-    monitorConnectionAddress: string;
-}
-
-export const defaultConfiguration: ConnectionProxyConfig = {
-    gsproConnectionAddress: '127.0.0.1',
-    gsproConnectionPort: 921,
-    monitorConnectionAddress: '127.0.0.1',
-    monitorConnectionPort: 921
-};
-
 export enum ProxyEvent {
     Status = 'proxy:status',
     Data = 'proxy:data',
@@ -38,8 +24,8 @@ export type ProxyDataEvent = {
 }
 
 export class ConnectionProxy extends EventEmitter {
-    private gspro: GsproConnection;
-    private monitor: MonitorConnection;
+    private gspro?: GsproConnection;
+    private monitor?: MonitorConnection;
 
     start(port: number) {
         this.gspro = new GsproConnection(port);
@@ -55,10 +41,13 @@ export class ConnectionProxy extends EventEmitter {
 
     stop() {
         try {
-            this.gspro.disconnect();
-            this.monitor.disconnect();
+            this.gspro?.disconnect();
+            this.monitor?.disconnect();
         } catch(error) {
             this.handleError(error);
+        } finally {
+            this.gspro = undefined;
+            this.monitor = undefined;
         }
     }
 
@@ -75,7 +64,7 @@ export class ConnectionProxy extends EventEmitter {
             data
         });
 
-        this.monitor.write(JSON.stringify(data));
+        this.monitor?.write(JSON.stringify(data));
     }
 
     private onMonitorStatus(statusEvent: ConnectionStatusEvent) {
@@ -97,7 +86,7 @@ export class ConnectionProxy extends EventEmitter {
             return;
         }
 
-        this.gspro.write(JSON.stringify(data));
+        this.gspro?.write(JSON.stringify(data));
     }
 
     private handleError(error: unknown) {
