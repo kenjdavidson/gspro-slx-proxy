@@ -1,6 +1,5 @@
 import { app, BrowserWindow, ipcMain, IpcMainEvent, nativeTheme } from "electron";
 import { join } from "path";
-import proxy from "@common/gspro/ConnectorProxy";
 
 const createBrowserWindow = (): BrowserWindow => {
     const preloadScriptFilePath = join(__dirname, "..", "dist-preload", "index.js");

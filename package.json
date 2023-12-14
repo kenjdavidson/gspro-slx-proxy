@@ -1,6 +1,6 @@
 {
     "name": "gspro-slx-proxy",
-    "description": "Proxy communication between SLX and GSPro",    
+    "description": "Proxy communication between SLX and GSPro",
     "version": "3.3.0",
     "license": "MIT",
     "author": {
@@ -43,7 +43,7 @@
         "vite": "^4.4.12",
         "vite-plugin-electron": "^0.14.1",
         "vite-plugin-electron-renderer": "^0.14.5",
-        "vitest": "^0.34.6"
+        "vitest": "^1.0.0"
     },
     "dependencies": {
         "@fluentui/react-components": "^9.41.0",

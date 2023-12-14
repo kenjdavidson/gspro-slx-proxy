@@ -1,5 +1,5 @@
 import { GSPRO_PORT_STRING } from '@common/gspro/Config';
-import { Button, InfoLabel, Input, InputProps, Text, makeStyles, useId } from '@fluentui/react-components';
+import { Button, InfoLabel, Input, InputProps, makeStyles, useId } from '@fluentui/react-components';
 import { useState } from 'react';
 
 const useStyles = makeStyles({

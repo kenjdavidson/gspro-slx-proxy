@@ -26,7 +26,7 @@ export type Player = {
     Club: Club
 }
 
-export type GsproEvent = {
+export type GSConnectToMonitor = {
     Code: number;
     Message: string;
     Player: Player;

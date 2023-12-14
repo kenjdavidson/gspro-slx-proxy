@@ -34,7 +34,7 @@ export enum Units {
     Meters = 'Meters'
 }
 
-export type MonitorEvent = {
+export type MonitorToGSConnect = {
     DeviceID: string;
     Units: Units;
     ShotNumber: number;
