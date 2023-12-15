@@ -9,11 +9,9 @@ export abstract class AbstractConnection extends EventEmitter {
   protected connectionStatus: ConnectionStatus;
   protected socket?: Socket;
 
-  constructor(port: number, address: string = '127.0.0.1') {
+  constructor() {
     super();
 
-    this.port = port;
-    this.address = address;
     this.connectionStatus = ConnectionStatus.Disconnected;
   }
 

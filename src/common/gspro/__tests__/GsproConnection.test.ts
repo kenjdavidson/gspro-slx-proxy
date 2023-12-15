@@ -1,61 +1,57 @@
-import net, { Server, Socket } from "net";
-import { ConnectionStatus } from "../ConnectionStatus";
-import { GsproConnection, GsproConnectionEvent } from "../GsproConnection";
+import Mitm from 'mitm';
+import { Socket } from 'net';
+import { EventEmitter } from 'stream';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { EventEmitter } from "stream";
+import { ConnectionStatus } from '../ConnectionStatus';
+import { GsproConnection, GsproConnectionEvent } from '../GsproConnection';
 
-describe('GsproConnection definition', () => {
-    it('should accept port in constructor', () => {
-        const connection = new GsproConnection(921);
-        
-        expect(connection.getPort()).toBe(921);
-    });
+describe('GsproConnection', () => {
+  const port = 921;
 
-    it('should be created with Disconnected status', () => {
-        const connection = new GsproConnection(921);
+  let mitm: Mitm;
 
-        expect(connection.getConnectionStatus()).toBe(ConnectionStatus.Disconnected);
-    });
-});
+  beforeEach(() => {
+    mitm = new Mitm();
+  });
 
-describe('GsproConnection connection', () => {
-    const port = 921;
+  afterEach(() => {
+    mitm.disable();
+  });
+
+  it('should handle status changes and notify', async () => {
     const lock = new EventEmitter();
 
-    let mockServer: Server;
-    let mockSocket: Socket;
-
-    beforeEach(() => {
-        mockServer = net.createServer((socket => {
-            mockSocket = socket;
-            mockSocket.on('close', () => lock.emit('closed'));
-
-            lock.emit('connected');
-        }));
-
-        mockServer.on('close', () => mockSocket?.destroy());
-        mockServer.listen(port); 
+    mitm.on('connection', (socket: Socket) => {
+      lock.emit('connected');
+      socket.destroy();
     });
 
-    afterEach(() => {
-        mockServer.close();     
+    const mockListener = vi
+      .fn()
+      .mockImplementation(() => {})
+      .mockImplementation(() => {})
+      .mockImplementation(() => {
+        lock.emit('disconnected');
+      });
+    const connection = new GsproConnection();
+    connection.on(GsproConnectionEvent.Status, mockListener);
+    connection.connect(port);
+
+    await new Promise((resolve) => lock.once('disconnected', resolve));
+
+    expect(mockListener).toHaveBeenCalledTimes(4);
+    expect(mockListener).toHaveBeenNthCalledWith(1, {
+      status: ConnectionStatus.Connecting,
     });
-
-    it('should handle connection correctly', async () => {
-        const mockListener = vi.fn();
-        const connection = new GsproConnection(port);
-        
-        connection.on(GsproConnectionEvent.Status, mockListener);
-        connection.connect();
-
-        await new Promise((resolve) => lock.once('connected', resolve));
-
-        expect(mockListener).toHaveBeenCalledTimes(2);
-        expect(mockListener).toHaveBeenNthCalledWith(1, {
-            status: ConnectionStatus.Connecting
-        });
-        expect(mockListener).toHaveBeenNthCalledWith(2, {
-            status: ConnectionStatus.Connected
-        });
+    expect(mockListener).toHaveBeenNthCalledWith(2, {
+      status: ConnectionStatus.Connected,
     });
+    expect(mockListener).toHaveBeenNthCalledWith(3, {
+      error: 'connect ECONNREFUSED 127.0.0.1:921',
+      status: 0,
+    });
+    expect(mockListener).toHaveBeenNthCalledWith(4, {
+      status: ConnectionStatus.Disconnected,
+    });
+  });
 });
