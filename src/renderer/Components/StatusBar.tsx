@@ -34,14 +34,14 @@ export const StatusBar = ({
         <ToolbarGroup
             className={styles.toolbarGroup}>
             <Tooltip
-                content={ gsproConnected ? 'Connected to GSPConnect' : 'Not connected to GSPConnect' }
+                content={ gsproConnected ? 'Connected to GSPro' : 'Not connected to GSPro' }
                 relationship="label">
                 <Badge
                     size="small"
                     color={ gsproConnected ? "success" : "informative"}>GSPRO</Badge>
             </Tooltip>
             <Tooltip
-                content={ slxconnected ? 'Conected to SLX Connect' : 'Not connected to SLX Connect' }
+                content={ slxconnected ? 'Connected to SLX Connect' : 'Not connected to SLX Connect' }
                 relationship="label">
                 <Badge
                     size="small"
