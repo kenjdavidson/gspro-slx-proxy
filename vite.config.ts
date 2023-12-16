@@ -76,7 +76,7 @@ export default defineConfig(({ command }) => {
         test: {
             root: 'src',
             include: [
-                '**/*.{test,spec}.ts(x)'
+                '**/*.{test,spec}.ts?(x)'
             ],
             setupFiles: [
                 './__tests__/setupTests.ts'

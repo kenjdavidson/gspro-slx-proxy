@@ -39,7 +39,24 @@ export type MonitorToGSConnect = {
     Units: Units;
     ShotNumber: number;
     APIversion: string;
-    BallData: BallData;
-    ClubData: ClubData;
+    BallData?: BallData;
+    ClubData?: ClubData;
     ShotDataOptions: ShotDataOptions;
 }
+
+export function convertToHeartbeat(data: MonitorToGSConnect): MonitorToGSConnect {
+    return {
+        DeviceID: data.DeviceID,
+        Units: data.Units,
+        ShotNumber: data.ShotNumber,
+        APIversion: data.APIversion,
+        ShotDataOptions: {
+            ContainsBallData: false,
+            ContainsClubData: false,
+            LaunchMonitorIsReady: data.ShotDataOptions.LaunchMonitorIsReady,
+            LauchMonitorBallDetected: data.ShotDataOptions.LauchMonitorBallDetected,
+            Heartbeat: true
+        }
+    }
+} 
+

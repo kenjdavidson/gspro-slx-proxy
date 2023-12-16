@@ -3,7 +3,7 @@ import { GsproConnection, GsproConnectionEvent } from './GsproConnection';
 import { MonitorConnection, MonitorConnectionEvent } from './MonitorConnection';
 import { ensureError } from '../utils/ErrorUtil';
 import { ConnectionStatus, ConnectionStatusEvent } from './ConnectionStatus';
-import { MonitorToGSConnect } from './MonitorEvent';
+import { MonitorToGSConnect, convertToHeartbeat } from './MonitorEvent';
 import { GSConnectToMonitor } from './GsproEvent';
 
 export enum ProxyEvent {
@@ -25,15 +25,24 @@ export type ProxyDataEvent = {
 }
 
 export class ConnectionProxy extends EventEmitter {
-    private gspro?: GsproConnection;
-    private monitor?: MonitorConnection;
+    private gspro: GsproConnection;
+    private monitor: MonitorConnection;
+
+    constructor(
+        _gspro: GsproConnection,
+        _monitor: MonitorConnection
+    ) {
+        super();
+
+        this.gspro = _gspro;
+        this.monitor = _monitor;
+    }
 
     connectGspro(port: number) {
-        if (this.gspro) {
-            this.gspro.disconnect();
+        if (this.gspro.getConnectionStatus() !== ConnectionStatus.Disconnected) {
+            throw new Error('Already connected to GSPro, disconnect first');
         }
 
-        this.gspro = new GsproConnection();
         this.gspro.on(GsproConnectionEvent.Status, this.onGsproStatus);
         this.gspro.on(GsproConnectionEvent.Data, this.onGsproData);
         this.gspro.connect(port);
@@ -41,24 +50,24 @@ export class ConnectionProxy extends EventEmitter {
 
     disconnectGspro() {
         try {
-            this.gspro?.disconnect();
-            this.gspro = undefined;
+            this.gspro.disconnect();
         } catch(error) {
             this.handleError('gspro', error);
         }
     }
 
     listenForMonitor(port: number = 921) {
-        this.monitor = new MonitorConnection();
-        this.monitor.on(MonitorConnectionEvent.Status, this.onMonitorStatus);
-        this.monitor.on(MonitorConnectionEvent.Data, this.onMonitorData);
+        if (this.monitor.getConnectionStatus() != ConnectionStatus.Disconnected) {
+            throw new Error('Already connected or listening for Monitor, disconnect first');
+        }
+        this.monitor.on(MonitorConnectionEvent.Status, (event) => this.onMonitorStatus(event));
+        this.monitor.on(MonitorConnectionEvent.Data, (data) => this.onMonitorData(data));
         this.monitor.listen(port);
     }
 
     disconnectMonitor() {
         try {
-            this.monitor?.disconnect();
-            this.monitor = undefined;
+            this.monitor.disconnect();
         } catch(error) {
             this.handleError('monitor', error);
         }
@@ -77,7 +86,7 @@ export class ConnectionProxy extends EventEmitter {
             data
         });
 
-        this.monitor?.write(JSON.stringify(data));
+        this.monitor.write(JSON.stringify(data));
     }
 
     private onMonitorStatus(statusEvent: ConnectionStatusEvent) {
@@ -94,12 +103,13 @@ export class ConnectionProxy extends EventEmitter {
             data
         });
 
-        if (data.BallData?.Speed == 0) {
-            console.error(`Monitor data contains invalid ball speed, skipping message`);
-            return;
-        }
 
-        this.gspro?.write(JSON.stringify(data));
+        if (data.BallData?.Speed == 0 || data.ClubData?.Speed == 0) {
+            const heartbeat = convertToHeartbeat(data);
+            this.gspro.write(JSON.stringify(heartbeat));
+        } else {
+            this.gspro.write(JSON.stringify(data));
+        }        
     }
 
     private handleError(system: string, error: unknown) {
@@ -112,3 +122,4 @@ export class ConnectionProxy extends EventEmitter {
         });        
     }
 }
+

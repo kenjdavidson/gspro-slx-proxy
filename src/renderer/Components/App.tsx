@@ -61,6 +61,8 @@ export const App = () => {
   const CurrentTab = useMemo(() => {
     console.log(currentTab);
     switch (currentTab) {
+      case Tabs.Home:
+          return Home;
         case Tabs.Settings:
             return Settings;
       case Tabs.Help:
@@ -86,12 +88,11 @@ export const App = () => {
           </section>
           <section>
             <ConnectionButtons 
-                gsproButtonClick={() => setSlxConnected(!slxConnected)}
-                slxButtonClick={() => setGsproConnected(!gsproConnected)}
+                gsproButtonClick={() => setSlxConnected(!gsproConnected)}
+                slxButtonClick={() => setGsproConnected(!slxConnected)}
             />
           </section>
         </main>
-        <StatusBar slxconnected={slxConnected} gsproConnected={gsproConnected} />
       </div>
     </FluentProvider>
   );

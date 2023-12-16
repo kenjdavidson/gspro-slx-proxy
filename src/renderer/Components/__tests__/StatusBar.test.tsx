@@ -9,8 +9,8 @@ describe('StatusBar', () => {
         const statusBar = within(container).getByRole('toolbar');
         expect(statusBar).toBeDefined();
 
-        const applicationName = within(statusBar).getByLabelText('Application name');
-        expect(applicationName).toHaveTextContent('GSPro SLX Proxy');
+        const applicationName = within(statusBar).getByLabelText('Connection status');
+        expect(applicationName).toHaveTextContent('Connection status');
 
         const gspro = within(statusBar).getByLabelText('Not connected to GSPro');
         expect(gspro).toBeInTheDocument();
@@ -27,8 +27,8 @@ describe('StatusBar', () => {
         const statusBar = within(container).getByRole('toolbar');
         expect(statusBar).toBeDefined();
 
-        const applicationName = within(statusBar).getByLabelText('Application name');
-        expect(applicationName).toHaveTextContent('GSPro SLX Proxy');
+        const applicationName = within(statusBar).getByLabelText('Connection status');
+        expect(applicationName).toHaveTextContent('Connection status');
 
         const gspro = within(statusBar).getByLabelText('Connected to GSPro');
         expect(gspro).toBeInTheDocument();

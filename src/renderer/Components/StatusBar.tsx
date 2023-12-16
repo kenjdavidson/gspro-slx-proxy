@@ -29,7 +29,7 @@ export const StatusBar = ({
         className={styles.toolbar}>
         <ToolbarGroup
             className={styles.toolbarGroup}>
-            <Label size="small" aria-label="Application name">GSPro SLX Proxy</Label>
+            <Label size="small" aria-label="Connection status">Connection status</Label>
         </ToolbarGroup>
         <ToolbarGroup
             className={styles.toolbarGroup}>
