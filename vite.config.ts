@@ -76,8 +76,13 @@ export default defineConfig(({ command }) => {
         test: {
             root: 'src',
             include: [
-                '**/*.{test,spec}.ts'
-            ]
+                '**/*.{test,spec}.ts(x)'
+            ],
+            setupFiles: [
+                './__tests__/setupTests.ts'
+            ],
+            globals: true,
+            environment: 'jsdom',
         }
     };
 });

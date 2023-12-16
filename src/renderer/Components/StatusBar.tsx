@@ -24,7 +24,7 @@ export const StatusBar = ({
 
     return (
     <Toolbar 
-        aria-label="Status bar" 
+        aria-label="application status" 
         {...props} 
         className={styles.toolbar}>
         <ToolbarGroup
@@ -35,14 +35,14 @@ export const StatusBar = ({
             className={styles.toolbarGroup}>
             <Tooltip
                 content={ gsproConnected ? 'Connected to GSPConnect' : 'Not connected to GSPConnect' }
-                relationship="description">
+                relationship="label">
                 <Badge
                     size="small"
                     color={ gsproConnected ? "success" : "informative"}>GSPRO</Badge>
             </Tooltip>
             <Tooltip
                 content={ slxconnected ? 'Conected to SLX Connect' : 'Not connected to SLX Connect' }
-                relationship="description">
+                relationship="label">
                 <Badge
                     size="small"
                     color={ slxconnected ? "success" : "informative"}>SLX</Badge>
