@@ -20,34 +20,47 @@ export type ProxyStatusEvent = {
 
 export type ProxyDataEvent = {
     system: string;
-    data: MonitorToGSConnect | GSConnectToMonitor
+    data: MonitorToGSConnect | GSConnectToMonitor,
+    message?: string;
 }
 
 export class ConnectionProxy extends EventEmitter {
     private gspro?: GsproConnection;
     private monitor?: MonitorConnection;
 
-    start(port: number) {
-        this.gspro = new GsproConnection(port);
+    connectGspro(port: number) {
+        if (this.gspro) {
+            this.gspro.disconnect();
+        }
+
+        this.gspro = new GsproConnection();
         this.gspro.on(GsproConnectionEvent.Status, this.onGsproStatus);
         this.gspro.on(GsproConnectionEvent.Data, this.onGsproData);
-        this.gspro.connect();
-
-        this.monitor = new MonitorConnection(port);
-        this.monitor.on(MonitorConnectionEvent.Status, this.onMonitorStatus);
-        this.monitor.on(MonitorConnectionEvent.Data, this.onMonitorData);
-        this.monitor.listen();
+        this.gspro.connect(port);
     }
 
-    stop() {
+    disconnectGspro() {
         try {
             this.gspro?.disconnect();
-            this.monitor?.disconnect();
-        } catch(error) {
-            this.handleError(error);
-        } finally {
             this.gspro = undefined;
+        } catch(error) {
+            this.handleError('gspro', error);
+        }
+    }
+
+    listenForMonitor(port: number = 921) {
+        this.monitor = new MonitorConnection();
+        this.monitor.on(MonitorConnectionEvent.Status, this.onMonitorStatus);
+        this.monitor.on(MonitorConnectionEvent.Data, this.onMonitorData);
+        this.monitor.listen(port);
+    }
+
+    disconnectMonitor() {
+        try {
+            this.monitor?.disconnect();
             this.monitor = undefined;
+        } catch(error) {
+            this.handleError('monitor', error);
         }
     }
 
@@ -89,12 +102,13 @@ export class ConnectionProxy extends EventEmitter {
         this.gspro?.write(JSON.stringify(data));
     }
 
-    private handleError(error: unknown) {
+    private handleError(system: string, error: unknown) {
         const err = ensureError(error);
 
-        this.emit(ProxyEvent.Error, err);
         console.error(err);    
+        this.emit(ProxyEvent.Error, {
+            system,
+            error: err
+        });        
     }
 }
-
-export default new ConnectionProxy();

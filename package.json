@@ -1,7 +1,7 @@
 {
     "name": "gspro-slx-proxy",
     "description": "Proxy communication between SLX and GSPro",
-    "version": "3.3.0",
+    "version": "1.0.0",
     "license": "MIT",
     "author": {
         "email": "ken.j.davidson@live.ca",
@@ -26,6 +26,7 @@
         "typecheck:renderer": "tsc -p src/renderer/tsconfig.json --noEmit"
     },
     "devDependencies": {
+        "@gr2m/net-interceptor": "^1.0.0",
         "@types/node": "^20.8.6",
         "@types/react": "^18.2.22",
         "@types/react-dom": "^18.2.7",
@@ -37,7 +38,6 @@
         "electron": "^27.1.2",
         "electron-builder": "^24.9.1",
         "eslint": "^8.49.0",
-        "mitm": "^1.7.2",
         "prettier": "^3.0.3",
         "prettier-plugin-organize-imports": "^3.2.3",
         "typescript": "^5.2.2",

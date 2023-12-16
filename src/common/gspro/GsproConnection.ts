@@ -1,8 +1,8 @@
-import { Socket } from 'net';
+import net, { Socket } from 'net';
 import { ConnectionStatus } from './ConnectionStatus';
 import { ensureError } from '../utils/ErrorUtil';
 import { GSConnectToMonitor } from './GsproEvent';
-import { AbstractConnection } from './AbstractConnection';
+import EventEmitter from 'events';
 
 export enum GsproConnectionEvent {
   Status = 'gspro:status',
@@ -14,9 +14,14 @@ export enum GsproConnectionEvent {
  * - writing all data directly to the GSPConnect service
  * - reading all data and emitting to the listeners of gspro:data events
  */
-export class GsproConnection extends AbstractConnection {
+export class GsproConnection extends EventEmitter {
+  private socket?: Socket;
+  private connectionStatus: ConnectionStatus;
+
   constructor() {
     super();
+
+    this.connectionStatus = ConnectionStatus.Disconnected;
   }
 
   /**
@@ -34,8 +39,8 @@ export class GsproConnection extends AbstractConnection {
 
     try {
       this.updateStatus(ConnectionStatus.Connecting);
-      this.socket = new Socket();
-      this.socket.connect(port, address);    
+
+      this.socket = net.connect(port, address);   
       this.onConnection();
     } catch (error: unknown) {
       const err = ensureError(error);
@@ -56,13 +61,18 @@ export class GsproConnection extends AbstractConnection {
     }
   }
 
-  private onConnection() {
-    this.updateStatus(ConnectionStatus.Connected);
+  write(data: Buffer | string) {
+    this.socket?.write(data);
+  }
+
+  private onConnection() {    
     this.socket?.setTimeout(0);
     this.socket?.on('timeout', () => this.disconnect());
     this.socket?.on('close', () => this.disconnect());
     this.socket?.on('error', (error) => this.onError(error))      
     this.socket?.on('data', (data) => this.onData(data));
+
+    this.updateStatus(ConnectionStatus.Connected);    
   }
 
   private onError(error: unknown) {
@@ -82,5 +92,22 @@ export class GsproConnection extends AbstractConnection {
   private onData(data: Buffer) {
     const gsproEvent = JSON.parse(data.toString()) as GSConnectToMonitor;
     this.emit(GsproConnectionEvent.Data, gsproEvent);
+  }
+
+  private updateStatus(status: ConnectionStatus) {
+    this.emit(GsproConnectionEvent.Status, { status });
+    this.connectionStatus = status;
+  }
+
+  private handleError(error: string) {
+    this.emit(GsproConnectionEvent.Status, {
+      status: ConnectionStatus.Error,
+      error,
+    });
+    this.connectionStatus = ConnectionStatus.Error;
+  }
+
+  getConnectionStatus() {
+    return this.connectionStatus;
   }
 }
