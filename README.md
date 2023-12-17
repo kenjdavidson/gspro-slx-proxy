@@ -16,29 +16,42 @@ This issue pops up:
 
 > Some club changes work, the issue is more prevelant on par 3s for some reason.
 
-## Development
+### Screenshots
 
-### Install dependencies
+> Todo
+
+## Contribution
+
+Feel free to:
+
+- Open any issues/requests for bugs/features
+- Pull Requests with added features/bug fixes
+- Fork to your hearts content to get working
+
+Pretty straight forward to get started:
+
+### Getting the app started
 
 ```
 $ npm install
-```
-
-### Run app in dev mode
-
-```
 $ npm run dev
 ```
 
-### Lint files
+### Running tests
+
+Test are separated into `nodejs` and `frontend`; which can be run using the following:
+
+```
+$ npm run test
+$ npm run testui
+```
+
+> Both of which have a `:watch` alternative.  I suggest/recommend adding tests openning a pull request.
+
+### Lint / Typecheaking
 
 ```
 $ npm run lint
-```
-
-### Perform typecheck
-
-```
 $ npm run typecheck:main
 $ npm run typecheck:preload
 $ npm run typecheck:renderer
@@ -49,3 +62,4 @@ $ npm run typecheck:renderer
 ```
 $ npm build && pnpm package
 ```
+
