@@ -5,24 +5,7 @@ import { ensureError } from '../utils/ErrorUtil';
 import { ConnectionStatus, ConnectionStatusEvent } from './ConnectionStatus';
 import { MonitorToGSConnect, convertToHeartbeat } from './MonitorEvent';
 import { GSConnectToMonitor } from './GsproEvent';
-
-export enum ProxyEvent {
-    Status = 'proxy:status',
-    Data = 'proxy:data',
-    Error = 'proxy:error'
-}
-
-export type ProxyStatusEvent = {
-    status: ConnectionStatus;
-    system: string;
-    message: string;    
-}
-
-export type ProxyDataEvent = {
-    system: string;
-    data: MonitorToGSConnect | GSConnectToMonitor,
-    message?: string;
-}
+import { ProxyEvent } from './ConnectionProxyEvent';
 
 export class ConnectionProxy extends EventEmitter {
     private gspro: GsproConnection;

@@ -20,7 +20,7 @@ export const Data = () => {
 
   const columns: TableColumnDefinition<MonitorToGSConnect>[] = [
     createTableColumn<MonitorToGSConnect>({
-      columnId: 'ballSpeed',
+      columnId: 'shotNumber',
       renderHeaderCell: () => <Header>Shot#</Header>,
       renderCell: (item) => item.ShotNumber || '',
     }),
@@ -82,7 +82,7 @@ export const Data = () => {
       renderCell: (item) => `${item.ClubData?.Lie}/${item.ClubData?.Loft}` || '',
     }),
     createTableColumn<MonitorToGSConnect>({
-      columnId: 'lieAndLof',
+      columnId: 'faceImpact',
       renderHeaderCell: () => <Header>VFI/HFI</Header>,
       renderCell: (item) => `${item.ClubData?.VerticalFaceImpact}/${item.ClubData?.HorizontalFaceImpact}` || '',
     }),

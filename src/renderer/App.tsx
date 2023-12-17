@@ -9,7 +9,7 @@ import {
   type Theme,
 } from '@fluentui/react-components';
 import React, { useEffect, useMemo, useState } from 'react';
-import { ProxyContext, useGsproConnection, useMonitorConnection } from './components/ProxyContext';
+import { ProxyContextProvider, useGsproConnection, useMonitorConnection } from './components/ProxyContext';
 import { Help } from './screens/Help';
 import { Settings } from './screens/Settings';
 import { Home } from './screens/Home';
@@ -62,7 +62,6 @@ export const App = () => {
   }, []);
 
   const CurrentTab = useMemo(() => {
-    console.log(currentTab);
     switch (currentTab) {
       case Tabs.Home:
         return Home;
@@ -79,9 +78,7 @@ export const App = () => {
 
   return (
     <FluentProvider theme={ThemeMapping[themeName]}>
-      <ProxyContext.Provider value={{
-        monitorData: []
-      }}>
+      <ProxyContextProvider>
         <div className={styles.container}>
           <nav>
             <TabList selectedValue={currentTab} onTabSelect={(_, data) => setCurrentTab(data.value as Tabs)}>
@@ -98,7 +95,7 @@ export const App = () => {
           </main>
           <StatusBar gsproConnected={gsproConnection?.isConnected} slxconnected={monitorConnection?.isConnected} />
         </div>
-      </ProxyContext.Provider>
+      </ProxyContextProvider>
     </FluentProvider>
   );
 };

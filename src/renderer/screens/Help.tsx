@@ -4,7 +4,6 @@ import {
   AccordionItem,
   AccordionPanel,
   Divider,
-  Text,
   makeStyles,
   shorthands,
 } from '@fluentui/react-components';
@@ -24,14 +23,12 @@ export const Help = () => {
   return (
     <>
       <p>
-        <Text as="p">
-          Provides a proxy between SLX Connect and GSPro Connect. This provides the ability to:
-          <ul>
-            <li>Stop SLX from sending invalid data, which causes GSPro to reset clubs.</li>
-            <li>Export SLX launch monitor details for use within 3rd party apps.</li>
-          </ul>
-        </Text>
+        Provides a proxy between SLX Connect and GSPro Connect. This provides the ability to:
       </p>
+      <ul>
+          <li>Stop SLX from sending invalid data, which causes GSPro to reset clubs.</li>
+          <li>Export SLX launch monitor details for use within 3rd party apps.</li>
+        </ul>
       <Divider className={styles.divider} />
       <Accordion>
         <AccordionItem value={1}>
