@@ -1,4 +1,3 @@
-import { defaultConfiguration } from '@common/gspro/ConnectionConfig';
 import { Button, InfoLabel, Input, InputProps, makeStyles, useId } from '@fluentui/react-components';
 import { useState } from 'react';
 
@@ -17,7 +16,7 @@ export const Settings = () => {
   const styles = useStyles();
   const inputId = useId('gspro-port');
   const [formValues, setFormValues] = useState({
-    gsproPort: defaultConfiguration.gsproConnectionPort.toString().padStart(4, '0')
+    gsproPort: "0922"
   });
 
   const onGsproPortChange: InputProps["onChange"] = (_, data) => {
@@ -32,10 +31,15 @@ export const Settings = () => {
   return (
     <>
       <p className={styles.inputWrapper}>
-        <InfoLabel htmlFor={inputId} size="small" info={<>* Must be a numeric value</>}>
+        <InfoLabel htmlFor={inputId} 
+          size="small">
           GSPro Port (default 0921)
         </InfoLabel>
-        <Input id={inputId} type='number' value={formValues.gsproPort} onChange={onGsproPortChange} />
+        <Input id={inputId} 
+          type='number' 
+          value={formValues.gsproPort} 
+          onChange={onGsproPortChange}
+          readOnly={true} />
       </p>
       <p className={styles.buttonBar}>
         <Button appearance="primary">Save</Button>

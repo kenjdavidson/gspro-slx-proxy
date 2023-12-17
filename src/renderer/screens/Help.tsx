@@ -1,26 +1,37 @@
-import { Accordion, AccordionHeader, AccordionItem, AccordionPanel, Divider, Text, makeStyles, shorthands } from '@fluentui/react-components';
+import {
+  Accordion,
+  AccordionHeader,
+  AccordionItem,
+  AccordionPanel,
+  Divider,
+  Text,
+  makeStyles,
+  shorthands,
+} from '@fluentui/react-components';
 
 const useStyles = makeStyles({
   divider: {
-    ...shorthands.padding('2px', '2px', '2px', '2px')
+    ...shorthands.padding('2px', '2px', '2px', '2px'),
   },
   panel: {
-    ...shorthands.padding('2px', '2px', '2px', '2px')
-  }
-})
+    ...shorthands.padding('2px', '2px', '2px', '2px'),
+  },
+});
 
 export const Help = () => {
   const styles = useStyles();
 
   return (
     <>
-      <Text as="p">
-        Provides a proxy between SLX Connect and GSPro Connect.  This provides the ability to: 
-        <ul>
-          <li>Stop SLX from sending invalid data, which causes GSPro to reset clubs.</li>
-          <li>Export SLX launch monitor details for use within 3rd party apps.</li>
-        </ul>
-      </Text>
+      <p>
+        <Text as="p">
+          Provides a proxy between SLX Connect and GSPro Connect. This provides the ability to:
+          <ul>
+            <li>Stop SLX from sending invalid data, which causes GSPro to reset clubs.</li>
+            <li>Export SLX launch monitor details for use within 3rd party apps.</li>
+          </ul>
+        </Text>
+      </p>
       <Divider className={styles.divider} />
       <Accordion>
         <AccordionItem value={1}>
@@ -37,7 +48,8 @@ export const Help = () => {
                   Find the line with content <code></code>
                 </li>
                 <li>
-                  Change the port from <code>0921</code> to <code>0922</code> (or any other port)
+                  Change the port from <code>0921</code> to <code>0922</code> (at this point 0922 is required, need to
+                  make customizable)
                 </li>
               </ul>
             </p>
@@ -81,7 +93,7 @@ export const Help = () => {
           <AccordionHeader>Start SLX Connect</AccordionHeader>
           <AccordionPanel>
             <p>
-              Finally open SLX Connect and start the GSPro widget.  The SLX connection status should update (turn green);
+              Finally open SLX Connect and start the GSPro widget. The SLX connection status should update (turn green);
             </p>
           </AccordionPanel>
         </AccordionItem>

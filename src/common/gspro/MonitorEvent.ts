@@ -22,7 +22,7 @@ export type ClubData = {
     AngleOfAttack: number;
     FaceToTarget: number;
     Lie: number;
-    loft: number;
+    Loft: number;
     SpeedAtImpact: number;
     VerticalFaceImpact: number;
     HorizontalFaceImpact: number;
