@@ -1,7 +1,7 @@
 import EventEmitter from 'events';
 import net, { Server, Socket } from 'net';
-import { ensureError } from '../utils/ErrorUtil';
-import { ConnectionStatus } from './ConnectionStatus';
+import { ensureError } from '../utils/errorUtils';
+import { ConnectionStatus } from '../ConnectionStatus';
 
 export enum MonitorConnectionEvent {
   Status = 'monitor:status',
@@ -32,7 +32,8 @@ export class MonitorConnection extends EventEmitter {
       this.server.close();
     }
 
-    this.server = net.createServer();
+    console.log(`connecting server`);
+    this.server = net.createServer(); 
     this.server.on('connection', (conn) => this.onConnection(conn));
     this.server.on('error', (error) => {
       const err = ensureError(error);
@@ -44,7 +45,12 @@ export class MonitorConnection extends EventEmitter {
     });
 
     this.updateStatus(ConnectionStatus.Connecting);
-    this.server.listen(port);
+    console.log(`#listening`);
+    try {
+      this.server.listen(port);
+    } catch(error) {
+      console.log(error);
+    }
   }
 
   disconnect() {
@@ -97,7 +103,8 @@ export class MonitorConnection extends EventEmitter {
     this.connectionStatus = status;
   }
 
-  private handleError(error: string) {
+  private handleError(error: string) {    
+    console.log(`MonitorConnection::error`)
     this.emit(MonitorConnectionEvent.Status, {
       status: ConnectionStatus.Error,
       error,

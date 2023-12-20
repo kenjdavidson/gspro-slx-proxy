@@ -1,33 +1,50 @@
-import { ProxyErrorEvent, ProxyEvent, ProxyStatusEvent } from '@common/gspro/ConnectionProxyEvent';
-import { ConnectionStatus } from '@common/gspro/ConnectionStatus';
-import { MonitorToGSConnect } from '@common/gspro/MonitorEvent';
-import { PropsWithChildren, createContext, useContext, useEffect, useState } from 'react';
-import { IpcRendererEvent } from 'electron';
-import { Toast, ToastBody, ToastTitle, useToastController } from '@fluentui/react-toast';
+import { ConnectionStatus } from '@common/ConnectionStatus';
+import { MonitorToGSConnect } from '@common/monitor/MonitorEvent';
+import { ProxyErrorEvent, ProxyEventType, ProxyMessageEvent, ProxyStatusEvent } from '@common/slxMonitorProxyEvents';
+import { Button, useId } from '@fluentui/react-components';
+import { Toast, ToastTitle, Toaster, useToastController } from '@fluentui/react-toast';
+import { PropsWithChildren, createContext, useContext, useEffect, useMemo, useState } from 'react';
 
-interface GsproConnectionProps {
+interface GsproContext {
   connect: (port: number) => void;
   disconnect: () => void;
   isConnected: boolean;
+  status: ConnectionStatus;
 }
 
-interface MonitorConnectionProps {
+interface MonitorContext {
   listen: (port: number) => void;
   disconnect: () => void;
   isConnected: boolean;
+  status: ConnectionStatus;
 }
 
 interface ProxyContextProps {
-  gspro?: GsproConnectionProps;
-  monitor?: MonitorConnectionProps;
+  gspro: GsproContext;
+  monitor: MonitorContext;
   monitorData: MonitorToGSConnect[];
 }
 
-const ProxyContext = createContext<ProxyContextProps>({
+const DEFAULT_CONTEXT = {
+  gspro: {
+    status: ConnectionStatus.Disconnected,
+    isConnected: false,
+    connect: () => {},
+    disconnect: () => {},
+  },
+  monitor: {
+    status: ConnectionStatus.Disconnected,
+    isConnected: false,
+    listen: () => {},
+    disconnect: () => {},
+  },
   monitorData: [],
-});
+};
+
+const ProxyContext = createContext<ProxyContextProps>(DEFAULT_CONTEXT);
+
 export const useGsproConnection = () => useContext(ProxyContext).gspro;
-export const useMonitorConnection = () => useContext(ProxyContext).gspro;
+export const useMonitorConnection = () => useContext(ProxyContext).monitor;
 export const useMonitorData = () => useContext(ProxyContext).monitorData;
 
 export const ProxyContextProvider = ({ children }: PropsWithChildren) => {
@@ -35,18 +52,25 @@ export const ProxyContextProvider = ({ children }: PropsWithChildren) => {
   const [gsproStatus, setGsproStatus] = useState<ConnectionStatus>(ConnectionStatus.Disconnected);
   const [monitorStatus, setMonitorStatus] = useState<ConnectionStatus>(ConnectionStatus.Disconnected);
   const [monitorData, setMonitorData] = useState<MonitorToGSConnect[]>([]);
-  const { dispatchToast } = useToastController();
+
+  const toasterId = useId('toaster');
+  const { dispatchToast } = useToastController(toasterId);
 
   useEffect(() => {
-    window.ContextBridge.onAppPorts((e: IpcRendererEvent) => {
-        const commsPort = e.ports[0];
-        commsPort.onmessage = onMessageRecieved;
-        setPort(commsPort);        
-    });
+    console.log(`attempting to set listener`);
+    const getPort = async () => {
+      const mainPort = await window.port;
+      mainPort.onmessage = onMessageRecieved;
+      setPort(mainPort);
+    };
+
+    getPort();
   }, []);
 
   const onMonitorData = (data: MonitorToGSConnect) => setMonitorData([...monitorData, data]);
+
   const onStatus = (status: ProxyStatusEvent) => {
+    console.info(`Updating connection status for ${status.system} to ${status.status}`);
     switch (status.system) {
       case 'gspro':
         return setGsproStatus(status.status);
@@ -54,49 +78,69 @@ export const ProxyContextProvider = ({ children }: PropsWithChildren) => {
         return setMonitorStatus(status.status);
     }
   };
+
   const onError = (error: ProxyErrorEvent) => {
-    const system = error.system.charAt(0).toUpperCase() + error.system.slice(1);
+    console.error(`ProxyContext#onError`, JSON.stringify(error));
     dispatchToast(
-        <Toast>
-            <ToastTitle>{system} Error</ToastTitle>
-            <ToastBody>{error.error.message}</ToastBody>
-        </Toast>,
-        { intent: 'error' }
-    )
-    console.error(error);
+      <Toast>
+        <ToastTitle>{error.message}</ToastTitle>
+      </Toast>,
+      { intent: 'error' },
+    );
   };
 
-  const onMessageRecieved = (event: MessageEvent<unknown>) => {
-    switch (event.type) {
-      case ProxyEvent.Data:
-        // @ts-expect-error fuck "typescript"
-        return onMonitorData(event.data);
-      case ProxyEvent.Status:
-        // @ts-expect-error fuck "typescript"
-        return onStatus(event);
-      case ProxyEvent.Error:
-        // @ts-expect-error fuck "typescript"
-        return onError(event);
+  const onMessageRecieved = (event: MessageEvent<ProxyMessageEvent>) => {
+    console.log(`ProxyContext#onMessageReceived eventData`, JSON.stringify(event.data));
+    switch (event.data.type) {
+      case ProxyEventType.Data:
+        return onMonitorData(event.data.data as MonitorToGSConnect);
+      case ProxyEventType.Status:
+        return onStatus(event.data.data as ProxyStatusEvent);
+      case ProxyEventType.Error:
+        return onError(event.data.data as ProxyErrorEvent);
     }
   };
+
+  const gsproContext = useMemo<GsproContext>(
+    () => ({
+      status: gsproStatus,
+      isConnected: gsproStatus === ConnectionStatus.Connected,
+      connect: () => {
+        console.info(`Posting ${ProxyEventType.ConnectGspro}`);
+        port?.postMessage(ProxyEventType.ConnectGspro) && setGsproStatus(ConnectionStatus.Connecting);
+      },
+      disconnect: () => {
+        console.info(`Posting ${ProxyEventType.DisconnectGspro}`);
+        port?.postMessage(ProxyEventType.DisconnectGspro);
+      },
+    }),
+    [gsproStatus, port],
+  );
+
+  const monitorContext = useMemo<MonitorContext>(
+    () => ({
+      status: monitorStatus,
+      isConnected: monitorStatus === ConnectionStatus.Connected,
+      listen: () => {
+        port?.postMessage(ProxyEventType.ListenMonitor) && setMonitorStatus(ConnectionStatus.Connecting);
+      },
+      disconnect: () => {
+        port?.postMessage(ProxyEventType.ListenMonitor);
+      },
+    }),
+    [monitorStatus, port],
+  );
 
   return (
     <ProxyContext.Provider
       value={{
-        gspro: {
-            isConnected: gsproStatus == ConnectionStatus.Connected,
-            connect: () => { port?.postMessage(ProxyEvent.ConnectGspro)},
-            disconnect: () => { port?.postMessage(ProxyEvent.DisconnectGspro)}
-        },
-        monitor: {
-            isConnected: monitorStatus == ConnectionStatus.Connected,
-            listen: () => { port?.postMessage(ProxyEvent.ListenMonitor)},
-            disconnect: () => { port?.postMessage(ProxyEvent.DisconnectMonitor)}
-        },
+        gspro: gsproContext,
+        monitor: monitorContext,
         monitorData,
       }}
     >
       {children}
+      <Toaster toasterId={toasterId} position='bottom'/>
     </ProxyContext.Provider>
   );
 };

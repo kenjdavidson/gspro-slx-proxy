@@ -1,4 +1,6 @@
+import { ConnectionStatus } from "@common/ConnectionStatus";
 import { Badge, Label, Toolbar, ToolbarGroup, ToolbarProps, Tooltip, makeStyles, shorthands } from "@fluentui/react-components";
+import { useMemo } from "react";
 
 const useStyles = makeStyles({
     toolbar: {
@@ -11,8 +13,8 @@ const useStyles = makeStyles({
   });
 
 export interface StatusBarProps extends ToolbarProps {
-    gsproConnected: boolean;
-    slxconnected: boolean;
+    gsproConnected: ConnectionStatus;
+    slxconnected: ConnectionStatus;
 }
   
 export const StatusBar = ({
@@ -21,6 +23,28 @@ export const StatusBar = ({
     ...props
 }: Partial<StatusBarProps>) => {
     const styles = useStyles();  
+
+    const statusColour = (status?: ConnectionStatus) => {
+        switch(status) {
+            case ConnectionStatus.Connected: return 'success';
+            case ConnectionStatus.Connecting: return 'warning';
+            default: return 'informative'
+        }
+    }
+
+    const statusMessage = (name: string, status?: ConnectionStatus) => {
+        switch(status) {
+            case ConnectionStatus.Connected: return `Connected to ${name}`;
+            case ConnectionStatus.Connecting: return `Attempting connection to ${name}`;
+            default: return `Not connected to ${name}`       
+        }
+    }
+
+    const gsproColour = useMemo(() => statusColour(gsproConnected), [gsproConnected]);
+    const slxColour = useMemo(() => statusColour(slxconnected), [slxconnected]);
+
+    const gsproMessage = useMemo(() => statusMessage('GSPro', gsproConnected), [gsproConnected]);
+    const slxMessage = useMemo(() => statusMessage('SLX', slxconnected), [slxconnected]);
 
     return (
     <Toolbar 
@@ -34,18 +58,18 @@ export const StatusBar = ({
         <ToolbarGroup
             className={styles.toolbarGroup}>
             <Tooltip
-                content={ gsproConnected ? 'Connected to GSPro' : 'Not connected to GSPro' }
+                content={ gsproMessage }
                 relationship="label">
                 <Badge
                     size="small"
-                    color={ gsproConnected ? "success" : "informative"}>GSPRO</Badge>
+                    color={ gsproColour }>GSPRO</Badge>
             </Tooltip>
             <Tooltip
-                content={ slxconnected ? 'Connected to SLX Connect' : 'Not connected to SLX Connect' }
+                content={ slxMessage }
                 relationship="label">
                 <Badge
                     size="small"
-                    color={ slxconnected ? "success" : "informative"}>SLX</Badge>
+                    color={ slxColour }>SLX</Badge>
             </Tooltip>
         </ToolbarGroup>
     </Toolbar>

@@ -7,14 +7,17 @@ import {
   webDarkTheme,
   webLightTheme,
   type Theme,
+  Toaster,
+  useToastController,
+  Toast,
+  ToastTitle,
+  Button,
+  useId,
 } from '@fluentui/react-components';
 import React, { useEffect, useMemo, useState } from 'react';
+import { StatusBar } from './components';
 import { ProxyContextProvider, useGsproConnection, useMonitorConnection } from './components/ProxyContext';
-import { Help } from './screens/Help';
-import { Settings } from './screens/Settings';
-import { Home } from './screens/Home';
-import { StatusBar } from './components/StatusBar';
-import { Data } from './screens/Data';
+import { Data, Help, Home, Settings } from './screens';
 
 type ThemeName = 'Light' | 'Dark';
 
@@ -66,7 +69,7 @@ export const App = () => {
       case Tabs.Home:
         return Home;
       case Tabs.Data:
-        return Data;  
+        return Data;
       case Tabs.Settings:
         return Settings;
       case Tabs.Help:
@@ -80,7 +83,7 @@ export const App = () => {
     <FluentProvider theme={ThemeMapping[themeName]}>
       <ProxyContextProvider>
         <div className={styles.container}>
-          <nav>
+          <nav>     
             <TabList selectedValue={currentTab} onTabSelect={(_, data) => setCurrentTab(data.value as Tabs)}>
               <Tab value={Tabs.Home}>Home</Tab>
               <Tab value={Tabs.Data}>Data</Tab>
@@ -89,13 +92,25 @@ export const App = () => {
             </TabList>
           </nav>
           <main className={styles.main}>
-            <section>
-              <CurrentTab></CurrentTab>
-            </section>
+            <CurrentTab></CurrentTab>
           </main>
-          <StatusBar gsproConnected={gsproConnection?.isConnected} slxconnected={monitorConnection?.isConnected} />
-        </div>
-      </ProxyContextProvider>
+          <StatusBar gsproConnected={gsproConnection.status} slxconnected={monitorConnection.status} />          
+        </div>        
+      </ProxyContextProvider>   
     </FluentProvider>
   );
 };
+
+// Electron IPC
+// https://www.electronjs.org/docs/latest/tutorial/message-ports#communicating-directly-between-the-main-process-and-the-main-world-of-a-context-isolated-page
+window.port = new Promise(resolve => {
+  window.onmessage = (event) => {
+    const [ port ] = event.ports
+
+    port.postMessage({
+        type: 'react:iniitalize',
+    });
+  
+   resolve(port);
+  }
+});

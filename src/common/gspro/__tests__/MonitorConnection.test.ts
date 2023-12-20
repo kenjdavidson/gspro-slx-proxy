@@ -1,8 +1,8 @@
 import EventEmitter from 'events';
 import net from 'net';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { MonitorConnection, MonitorConnectionEvent } from '../MonitorConnection';
-import { ConnectionStatus } from '../ConnectionStatus';
+import { MonitorConnection, MonitorConnectionEvent } from '../../monitor/MonitorConnection';
+import { ConnectionStatus } from '../../ConnectionStatus';
 
 describe('MonitorConnection', () => {
   let monitor: MonitorConnection;

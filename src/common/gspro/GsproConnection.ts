@@ -1,6 +1,6 @@
 import net, { Socket } from 'net';
-import { ConnectionStatus } from './ConnectionStatus';
-import { ensureError } from '../utils/ErrorUtil';
+import { ConnectionStatus } from '../ConnectionStatus';
+import { ensureError } from '../utils/errorUtils';
 import { GSConnectToMonitor } from './GsproEvent';
 import EventEmitter from 'events';
 
@@ -71,13 +71,12 @@ export class GsproConnection extends EventEmitter {
     this.socket?.on('close', () => this.disconnect());
     this.socket?.on('error', (error) => this.onError(error))      
     this.socket?.on('data', (data) => this.onData(data));
-
-    this.updateStatus(ConnectionStatus.Connected);    
+    this.socket?.on('connect', () => this.updateStatus(ConnectionStatus.Connected)); 
   }
 
-  private onError(error: unknown) {
-    const err = ensureError(error);
-    this.handleError(err.message); 
+  private onError(error) {
+    console.log(`GsproConnection#onError`, JSON.stringify(error));
+    this.handleError(`Error connecting to GSPro, see logs for details`); 
     this.updateStatus(ConnectionStatus.Disconnected); 
   }
 
@@ -100,11 +99,11 @@ export class GsproConnection extends EventEmitter {
   }
 
   private handleError(error: string) {
+    this.connectionStatus = ConnectionStatus.Error;
     this.emit(GsproConnectionEvent.Status, {
       status: ConnectionStatus.Error,
-      error,
-    });
-    this.connectionStatus = ConnectionStatus.Error;
+      message: error
+    });    
   }
 
   getConnectionStatus() {

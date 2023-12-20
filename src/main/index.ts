@@ -1,11 +1,18 @@
-import { ConnectionProxy } from "@common/gspro/ConnectionProxy";
+import { SlxMonitorProxy } from "@common/SlxMonitorProxy";
 import { GsproConnection } from "@common/gspro/GsproConnection";
-import { MonitorConnection } from "@common/gspro/MonitorConnection";
+import { MonitorConnection } from "@common/monitor/MonitorConnection";
 import { app, BrowserWindow, ipcMain, IpcMainEvent, nativeTheme, MessageChannelMain } from "electron";
 import { join } from "path";
 
 const { port1, port2 } = new MessageChannelMain();
-const proxy = new ConnectionProxy(new GsproConnection(), new MonitorConnection());
+
+const slxMonitorProxy = new SlxMonitorProxy(new GsproConnection(), new MonitorConnection(), port2);
+app.on('before-quit', () => {
+    console.info(`Attempting to shutdown connections...`);
+    slxMonitorProxy.shutdown();
+});
+
+port2.start();
 
 const createBrowserWindow = (): BrowserWindow => {
     const preloadScriptFilePath = join(__dirname, "..", "dist-preload", "index.js");
@@ -14,6 +21,7 @@ const createBrowserWindow = (): BrowserWindow => {
         autoHideMenuBar: true,
         resizable: true,
         webPreferences: {
+            contextIsolation: true,
             preload: preloadScriptFilePath,
         },
     });
@@ -44,8 +52,9 @@ const registerNativeThemeEventListeners = (allBrowserWindows: BrowserWindow[]) =
  */
 (async () => {
     await app.whenReady();
-    const mainWindow: BrowserWindow = createBrowserWindow();
-    mainWindow.webContents.postMessage('app:ports', null, [port2]);
+
+    const mainWindow: BrowserWindow = createBrowserWindow();    
+    mainWindow.webContents.postMessage('app:ports', '*', [port1]);
 
     loadFileOrUrl(mainWindow, app.isPackaged);
     registerIpcEventListeners();

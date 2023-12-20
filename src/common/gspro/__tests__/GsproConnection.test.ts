@@ -1,7 +1,7 @@
 import netInterceptor from '@gr2m/net-interceptor';
 import { Socket } from 'net';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { ConnectionStatus } from '../ConnectionStatus';
+import { ConnectionStatus } from '../../ConnectionStatus';
 import { GsproConnection, GsproConnectionEvent } from '../GsproConnection';
 import EventEmitter from 'events';
 

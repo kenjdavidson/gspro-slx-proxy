@@ -1,4 +1,4 @@
-import { MonitorToGSConnect } from '@common/gspro/MonitorEvent';
+import { MonitorToGSConnect } from '@common/monitor/MonitorEvent';
 import { Text } from '@fluentui/react-components';
 import {
   DataGrid,

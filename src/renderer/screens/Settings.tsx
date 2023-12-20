@@ -1,4 +1,4 @@
-import { Button, InfoLabel, Input, InputProps, makeStyles, useId } from '@fluentui/react-components';
+import { Button, InfoLabel, Input, InputProps, Text, makeStyles, useId } from '@fluentui/react-components';
 import { useState } from 'react';
 
 const useStyles = makeStyles({
@@ -30,21 +30,28 @@ export const Settings = () => {
 
   return (
     <>
-      <p className={styles.inputWrapper}>
-        <InfoLabel htmlFor={inputId} 
-          size="small">
-          GSPro Port (default 0921)
-        </InfoLabel>
-        <Input id={inputId} 
-          type='number' 
-          value={formValues.gsproPort} 
-          onChange={onGsproPortChange}
-          readOnly={true} />
-      </p>
-      <p className={styles.buttonBar}>
+      <section>
+        <Text size={600}>GSPro</Text>
+        <p className={styles.inputWrapper}>
+          <InfoLabel htmlFor={inputId} 
+            size="small">
+            GSPro Port (default 0921)
+          </InfoLabel>
+          <Input id={inputId} 
+            type='number' 
+            value={formValues.gsproPort} 
+            onChange={onGsproPortChange}
+            readOnly={true} />
+        </p>
+      </section>
+      <section>
+        <Text size={600}>Application</Text>
+        <p></p>
+      </section>
+      <section className={styles.buttonBar}>
         <Button appearance="primary">Save</Button>
         <Button >Reset</Button>
-      </p>
+      </section>
     </>
   );
 };
