@@ -32,7 +32,7 @@ export class MonitorConnection extends EventEmitter {
       this.server.close();
     }
 
-    console.log(`connecting server`);
+    console.log(`MonitorConnection#listen Listening for monitor connections on port ${port}`);
     this.server = net.createServer(); 
     this.server.on('connection', (conn) => this.onConnection(conn));
     this.server.on('error', (error) => {
@@ -43,23 +43,17 @@ export class MonitorConnection extends EventEmitter {
       });
       this.onClose();
     });
-
-    this.updateStatus(ConnectionStatus.Connecting);
-    console.log(`#listening`);
+    
     try {
+      this.updateStatus(ConnectionStatus.Connecting);
       this.server.listen(port);
     } catch(error) {
-      console.log(error);
+      this.handleError(error);
     }
   }
 
   disconnect() {
-    this.socket?.end();
-    this.socket?.destroy();
-    this.socket = undefined;
-
-    this.server?.close();
-    this.server = undefined;
+    this.onClose();
   }
 
   write(data: Buffer | string) {
@@ -80,6 +74,7 @@ export class MonitorConnection extends EventEmitter {
   }
 
   private onClose() {
+    console.log(`MonitorConnection#onClose disconnecting and closing connections`)
     try {
       this.socket?.destroy();
       this.server?.close();
@@ -104,7 +99,7 @@ export class MonitorConnection extends EventEmitter {
   }
 
   private handleError(error: string) {    
-    console.log(`MonitorConnection::error`)
+    console.log(`MonitorConnection::error ${error}`)
     this.emit(MonitorConnectionEvent.Status, {
       status: ConnectionStatus.Error,
       error,

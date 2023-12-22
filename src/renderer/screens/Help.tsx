@@ -4,11 +4,16 @@ import {
   AccordionItem,
   AccordionPanel,
   Divider,
+  Link,
+  Text,
   makeStyles,
   shorthands,
 } from '@fluentui/react-components';
 
 const useStyles = makeStyles({
+  p: {
+    display: 'block'
+  },
   divider: {
     ...shorthands.padding('2px', '2px', '2px', '2px'),
   },
@@ -22,17 +27,18 @@ export const Help = () => {
 
   return (
     <>
-      <p>
-        Provides a proxy between SLX Connect and GSPro Connect. This provides the ability to:
-      </p>
+      <Text size={600}>Help Topics</Text>
+      <Text as={'p'} className={styles.p}>
+        SLX Proxy is an application that sits between the <Link href='https://slxonhttps://support.swinglogic.us/hc/en-us'>SLX Connect App</Link>
+        and the GSP Connector.  It acts as a filter of invalid messages sent by SLX Connect which cause problems with GSPro:        
+      </Text>
       <ul>
-          <li>Stop SLX from sending invalid data, which causes GSPro to reset clubs.</li>
-          <li>Export SLX launch monitor details for use within 3rd party apps.</li>
-        </ul>
+        <li>Sending invalid shot data causing GSPro to reset the shot and club, making it impossible to change clubs at times.</li>
+      </ul>
       <Divider className={styles.divider} />
       <Accordion>
         <AccordionItem value={1}>
-          <AccordionHeader>Configure GSPConnect Port</AccordionHeader>
+          <AccordionHeader>Getting the proxy working</AccordionHeader>
           <AccordionPanel className={styles.panel}>
             <p>
               The default port for GSPConnect is <code>0921</code>, this needs to be changed so that the Proxy can be

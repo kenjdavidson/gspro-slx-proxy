@@ -4,7 +4,7 @@ import { ensureError } from './utils/errorUtils';
 import { ConnectionStatus, ConnectionStatusEvent } from './ConnectionStatus';
 import { MonitorToGSConnect, convertToHeartbeat } from './monitor/MonitorEvent';
 import { GSConnectToMonitor } from './gspro/GsproEvent';
-import { ProxyErrorEvent, ProxyEventType, ProxyStatusEvent } from './slxMonitorProxyEvents';
+import { ProxyDataEvent, ProxyErrorEvent, ProxyEventType, ProxyStatusEvent } from './slxMonitorProxyEvents';
 import { MessagePortMain } from 'electron';
 
 export class SlxMonitorProxy {
@@ -28,7 +28,7 @@ export class SlxMonitorProxy {
         this.port = _port;
         this.port.postMessage({
             type: 'SlxMonitorProxy:initialized'
-        })
+        });
 
         this.port.on('message', (event) => {
             console.log(`slxproxy:port:event `, event);
@@ -92,50 +92,29 @@ export class SlxMonitorProxy {
 
     private onGsproStatus(statusEvent: ConnectionStatusEvent) {
         if (statusEvent.status === ConnectionStatus.Error) {
-            this.port.postMessage({
-                type: ProxyEventType.Error, 
-                data: new ProxyErrorEvent('gspro', statusEvent.message)
-            });
+            this.port.postMessage(new ProxyErrorEvent('gspro', statusEvent.message));
         } else {
-            this.port.postMessage({
-                type: ProxyEventType.Status, 
-                data: new ProxyStatusEvent('gspro', statusEvent.status)
-            });
+            this.port.postMessage(new ProxyStatusEvent('gspro', statusEvent.status));
         }
     }
 
     private onGsproData(data: GSConnectToMonitor) {
-        this.port.postMessage({
-            type: ProxyEventType.Data,
-            data: {
-                system: 'gspro',
-                data
-            }
-        });
-
+        this.port.postMessage(new ProxyDataEvent<GSConnectToMonitor>('gspro', data));
         this.monitor.write(JSON.stringify(data));
     }
 
     private onMonitorStatus(statusEvent: ConnectionStatusEvent) {
         console.log(`onMonitorStatus`, statusEvent);
-        this.port.postMessage({
-            type: ProxyEventType.Status, 
-            data: {
-                system: 'monitor',
-                ...statusEvent
-            }
-        });
+        if (statusEvent.status === ConnectionStatus.Error) {
+            this.port.postMessage(new ProxyErrorEvent('monitor', statusEvent.message));
+        } else {
+            this.port.postMessage(new ProxyStatusEvent('monitor', statusEvent.status));
+        }
     }
 
     private onMonitorData(data: MonitorToGSConnect) {
         // Only write on valid data, at this point just check for club or ball speed
-        this.port.postMessage({
-            type: ProxyEventType.Data, 
-            data: {
-                system: 'monitor',
-                data
-            }
-        });
+        this.port.postMessage(new ProxyDataEvent<MonitorToGSConnect>('monitor', data));
 
         if (data.BallData?.Speed == 0 || data.ClubData?.Speed == 0) {
             const heartbeat = convertToHeartbeat(data);
@@ -147,13 +126,7 @@ export class SlxMonitorProxy {
 
     private handleError(system: string, error: unknown) {
         const err = ensureError(error);
-        this.port.postMessage({
-            type: ProxyEventType.Error, 
-            data: {
-                system,
-                error: err
-            }
-        });        
+        this.port.postMessage(new ProxyErrorEvent(system, err.message));
     }
 }
 

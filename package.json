@@ -57,6 +57,7 @@
     "dependencies": {
         "@fluentui/react-components": "^9.41.0",
         "@fluentui/react-icons": "^2.0.223",
+        "@stdlib/string": "^0.1.1",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
         "react-router": "^6.16.0",
