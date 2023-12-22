@@ -1,4 +1,5 @@
 import { ConnectionStatus } from '@common/ConnectionStatus';
+import { GSConnectToMonitor } from '@common/gspro';
 import { MonitorToGSConnect } from '@common/monitor/MonitorEvent';
 import { ProxyDataEvent, ProxyErrorEvent, ProxyEventType, ProxyMessageEvent, ProxyStatusEvent } from '@common/slxMonitorProxyEvents';
 import { useId } from '@fluentui/react-components';
@@ -51,6 +52,7 @@ export const useMonitorData = () => useContext(ProxyContext).monitorData;
 export const ProxyContextProvider = ({ children }: PropsWithChildren) => {
   const [port, setPort] = useState<MessagePort>();
   const [gsproStatus, setGsproStatus] = useState<ConnectionStatus>(ConnectionStatus.Disconnected);
+  const [gsproData, setGsproData] = useState<GSConnectToMonitor>();
   const [monitorStatus, setMonitorStatus] = useState<ConnectionStatus>(ConnectionStatus.Disconnected);
   const [monitorData, setMonitorData] = useState<MonitorToGSConnect[]>([]);
 

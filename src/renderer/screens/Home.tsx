@@ -1,5 +1,5 @@
 import { ConnectionStatus } from '@common/ConnectionStatus';
-import { Badge, Button, Card, CardHeader, Divider, Text, Tooltip, makeStyles, shorthands } from '@fluentui/react-components';
+import { Badge, CardHeader, Divider, Text, Tooltip, makeStyles, shorthands } from '@fluentui/react-components';
 import { ConnectionButtons, useGsproConnection, useMonitorConnection } from '../components';
 
 export const ACTION_TEXT = {
