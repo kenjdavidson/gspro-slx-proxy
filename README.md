@@ -60,6 +60,6 @@ $ npm run typecheck:renderer
 ### Build and package app
 
 ```
-$ npm build && pnpm package
+$ npm build && npm package
 ```
 
