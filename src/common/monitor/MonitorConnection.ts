@@ -1,7 +1,7 @@
 import EventEmitter from 'events';
 import net, { Server, Socket } from 'net';
-import { ensureError } from '../utils/errorUtils';
 import { ConnectionStatus } from '../ConnectionStatus';
+import { ensureError } from '../utils/errorUtils';
 
 export enum MonitorConnectionEvent {
   Status = 'monitor:status',
@@ -33,7 +33,7 @@ export class MonitorConnection extends EventEmitter {
     }
 
     console.log(`MonitorConnection#listen Listening for monitor connections on port ${port}`);
-    this.server = net.createServer(); 
+    this.server = net.createServer();
     this.server.on('connection', (conn) => this.onConnection(conn));
     this.server.on('error', (error) => {
       const err = ensureError(error);
@@ -43,11 +43,11 @@ export class MonitorConnection extends EventEmitter {
       });
       this.onClose();
     });
-    
+
     try {
       this.updateStatus(ConnectionStatus.Connecting);
       this.server.listen(port);
-    } catch(error) {
+    } catch (error) {
       this.handleError(error);
     }
   }
@@ -57,24 +57,31 @@ export class MonitorConnection extends EventEmitter {
   }
 
   write(data: Buffer | string) {
-    const complete = this.socket?.write(data);
-    console.log(complete);
+    try {
+      if (this.socket?.writable) {
+        this.socket?.write(data);
+      } else {
+        throw new Error(`Unable to write to Monitor`);
+      }
+    } catch (err) {
+      this.handleError(err);
+    }
   }
 
   private onConnection(conn: Socket) {
     if (this.socket && this.connectionStatus === ConnectionStatus.Connected) {
       conn.destroy(new Error('Monitor is already connected'));
     }
-    
+
     this.updateStatus(ConnectionStatus.Connected);
 
     this.socket = conn;
     this.socket.on('close', () => this.onClose());
-    this.socket.on('data', (data) => this.onData(data));   
+    this.socket.on('data', (data) => this.onData(data));
   }
 
   private onClose() {
-    console.log(`MonitorConnection#onClose disconnecting and closing connections`)
+    console.log(`MonitorConnection#onClose disconnecting and closing connections`);
     try {
       this.socket?.destroy();
       this.server?.close();
@@ -98,11 +105,12 @@ export class MonitorConnection extends EventEmitter {
     this.connectionStatus = status;
   }
 
-  private handleError(error: string) {    
-    console.log(`MonitorConnection::error ${error}`)
+  private handleError(error) {
+    const err = ensureError(error);
+    console.log(`MonitorConnection::error ${err}`);
     this.emit(MonitorConnectionEvent.Status, {
       status: ConnectionStatus.Error,
-      error,
+      error: err.message,
     });
     this.connectionStatus = ConnectionStatus.Error;
   }

@@ -1,11 +1,12 @@
 import netInterceptor from '@gr2m/net-interceptor';
+import EventEmitter from 'events';
 import { Socket } from 'net';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ConnectionStatus } from '../../ConnectionStatus';
 import { GsproConnection, GsproConnectionEvent } from '../GsproConnection';
-import EventEmitter from 'events';
 
-const createStatusListener = (lock: EventEmitter) => vi.fn().mockImplementation((event) => {
+const createStatusListener = (lock: EventEmitter) =>
+  vi.fn().mockImplementation((event) => {
     switch (event.status) {
       case ConnectionStatus.Connecting:
         lock.emit('connecting');
@@ -48,6 +49,10 @@ describe('GsproConnection', () => {
     connection.connect(port);
 
     await new Promise((resolve) => {
+      lock.once('connected', resolve);
+    });
+
+    await new Promise((resolve) => {
       lock.once('disconnected', resolve);
       connection.disconnect();
     });
@@ -78,8 +83,13 @@ describe('GsproConnection', () => {
 
     const statusListener = createStatusListener(lock);
     const connection = new GsproConnection();
+
     connection.on(GsproConnectionEvent.Status, statusListener);
     connection.connect(port);
+
+    await new Promise((resolve) => {
+      lock.once('connected', resolve);
+    });
 
     await new Promise((resolve) => {
       lock.once('disconnected', resolve);
@@ -111,8 +121,8 @@ describe('GsproConnection', () => {
 
     const statusListener = createStatusListener(lock);
     const dataListener = vi.fn().mockImplementation(() => {
-        lock.emit('data');
-      });
+      lock.emit('data');
+    });
 
     const connection = new GsproConnection();
     connection.on(GsproConnectionEvent.Status, statusListener);

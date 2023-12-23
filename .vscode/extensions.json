@@ -1,7 +1,8 @@
 {
-    "recommendations": [
-        "esbenp.prettier-vscode", 
-        "dbaeumer.vscode-eslint",
-        "ZixuanChen.vitest-explorer"
-    ]
+  "recommendations": [
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "ZixuanChen.vitest-explorer",
+    "Orta.vscode-jest"
+  ]
 }

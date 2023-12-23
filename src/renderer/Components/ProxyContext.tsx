@@ -1,7 +1,12 @@
 import { ConnectionStatus } from '@common/ConnectionStatus';
-import { GSConnectToMonitor } from '@common/gspro';
 import { MonitorToGSConnect } from '@common/monitor/MonitorEvent';
-import { ProxyDataEvent, ProxyErrorEvent, ProxyEventType, ProxyMessageEvent, ProxyStatusEvent } from '@common/slxMonitorProxyEvents';
+import {
+  ProxyDataEvent,
+  ProxyErrorEvent,
+  ProxyEventType,
+  ProxyMessageEvent,
+  ProxyStatusEvent,
+} from '@common/slx/slxMonitorProxyEvents';
 import { useId } from '@fluentui/react-components';
 import { Toast, ToastTitle, Toaster, useToastController } from '@fluentui/react-toast';
 import { capitalize } from '@stdlib/string';
@@ -52,7 +57,6 @@ export const useMonitorData = () => useContext(ProxyContext).monitorData;
 export const ProxyContextProvider = ({ children }: PropsWithChildren) => {
   const [port, setPort] = useState<MessagePort>();
   const [gsproStatus, setGsproStatus] = useState<ConnectionStatus>(ConnectionStatus.Disconnected);
-  const [gsproData, setGsproData] = useState<GSConnectToMonitor>();
   const [monitorStatus, setMonitorStatus] = useState<ConnectionStatus>(ConnectionStatus.Disconnected);
   const [monitorData, setMonitorData] = useState<MonitorToGSConnect[]>([]);
 
@@ -86,8 +90,8 @@ export const ProxyContextProvider = ({ children }: PropsWithChildren) => {
 
     dispatchToast(
       <Toast>
-        <ToastTitle>{`${capitalize(system)} is ${(ConnectionStatus[status])}.`}</ToastTitle>
-      </Toast>,
+        <ToastTitle>{`${capitalize(system)} is ${ConnectionStatus[status]}.`}</ToastTitle>
+      </Toast>
     );
   };
 
@@ -96,16 +100,18 @@ export const ProxyContextProvider = ({ children }: PropsWithChildren) => {
     const { system, message } = error;
     dispatchToast(
       <Toast>
-        <ToastTitle>{capitalize(system)}: {message}</ToastTitle>
+        <ToastTitle>
+          {capitalize(system)}: {message}
+        </ToastTitle>
       </Toast>,
-      { intent: 'error' },
+      { intent: 'error' }
     );
   };
 
   /**
    * Primary communication handler for the Proxy.  All messages come through this function and are processed
    * based on type and/or system.
-   * 
+   *
    * @param event incoming event (of any type)
    * @returns
    */
@@ -114,10 +120,10 @@ export const ProxyContextProvider = ({ children }: PropsWithChildren) => {
     switch (data.type) {
       case ProxyEventType.Data:
         if (data.system === 'monitor') {
-            return onMonitorData((data as ProxyDataEvent<MonitorToGSConnect>).data)
+          return onMonitorData((data as ProxyDataEvent<MonitorToGSConnect>).data);
         } else {
-            return;
-        }        
+          return;
+        }
       case ProxyEventType.Status:
         return onStatus(data as ProxyStatusEvent);
       case ProxyEventType.Error:
@@ -138,7 +144,7 @@ export const ProxyContextProvider = ({ children }: PropsWithChildren) => {
         port?.postMessage(ProxyEventType.DisconnectGspro);
       },
     }),
-    [gsproStatus, port],
+    [gsproStatus, port]
   );
 
   const monitorContext = useMemo<MonitorContext>(
@@ -152,7 +158,7 @@ export const ProxyContextProvider = ({ children }: PropsWithChildren) => {
         port?.postMessage(ProxyEventType.DisconnectMonitor);
       },
     }),
-    [monitorStatus, port],
+    [monitorStatus, port]
   );
 
   return (

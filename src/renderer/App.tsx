@@ -35,7 +35,7 @@ const useStyles = makeStyles({
   main: {
     flexGrow: 1,
     ...shorthands.margin('12px'),
-    ...shorthands.overflow('hidden', 'scroll'),
+    ...shorthands.overflow('hidden', 'auto'),
   },
 });
 
@@ -77,7 +77,7 @@ export const App = () => {
     <FluentProvider theme={ThemeMapping[themeName]}>
       <ProxyContextProvider>
         <div className={styles.container}>
-          <nav>     
+          <nav>
             <TabList selectedValue={currentTab} onTabSelect={(_, data) => setCurrentTab(data.value as Tabs)}>
               <Tab value={Tabs.Home}>Home</Tab>
               <Tab value={Tabs.Data}>Data</Tab>
@@ -88,23 +88,23 @@ export const App = () => {
           <main className={styles.main}>
             <CurrentTab></CurrentTab>
           </main>
-          <StatusBar gsproConnected={gsproConnection.status} slxconnected={monitorConnection.status} />          
-        </div>        
-      </ProxyContextProvider>   
+          <StatusBar gsproConnected={gsproConnection.status} slxconnected={monitorConnection.status} />
+        </div>
+      </ProxyContextProvider>
     </FluentProvider>
   );
 };
 
 // Electron IPC
 // https://www.electronjs.org/docs/latest/tutorial/message-ports#communicating-directly-between-the-main-process-and-the-main-world-of-a-context-isolated-page
-window.port = new Promise(resolve => {
+window.port = new Promise((resolve) => {
   window.onmessage = (event) => {
-    const [ port ] = event.ports
+    const [port] = event.ports;
 
     port.postMessage({
-        type: 'react:iniitalize',
+      type: 'react:iniitalize',
     });
-  
-   resolve(port);
-  }
+
+    resolve(port);
+  };
 });

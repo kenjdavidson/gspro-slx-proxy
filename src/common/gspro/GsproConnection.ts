@@ -1,8 +1,7 @@
+import EventEmitter from 'events';
 import net, { Socket } from 'net';
 import { ConnectionStatus } from '../ConnectionStatus';
 import { ensureError } from '../utils/errorUtils';
-import { GSConnectToMonitor } from './GsproEvent';
-import EventEmitter from 'events';
 
 export enum GsproConnectionEvent {
   Status = 'gspro:status',
@@ -26,21 +25,21 @@ export class GsproConnection extends EventEmitter {
 
   /**
    * Attempt to connect to the GSPConnect service.  If there is already a connection
-   * the request is skipped.  
-   * 
+   * the request is skipped.
+   *
    * @param port in which to connect
    * @param address of host to connect, defaults to 127.0.0.1
-   * @returns 
+   * @returns
    */
   connect(port: number, address: string = '127.0.0.1') {
     if (this.socket) {
-      return;
+      throw new Error('Already connected to GSPro, disconnect first');
     }
 
     try {
       this.updateStatus(ConnectionStatus.Connecting);
 
-      this.socket = net.connect(port, address);   
+      this.socket = net.connect(port, address);
       this.onConnection();
     } catch (error: unknown) {
       const err = ensureError(error);
@@ -56,8 +55,8 @@ export class GsproConnection extends EventEmitter {
       this.socket?.destroy();
       this.socket?.removeAllListeners();
       this.socket = undefined;
-               
-      this.updateStatus(ConnectionStatus.Disconnected);  
+
+      this.updateStatus(ConnectionStatus.Disconnected);
     }
   }
 
@@ -65,32 +64,32 @@ export class GsproConnection extends EventEmitter {
     this.socket?.write(data);
   }
 
-  private onConnection() {    
+  private onConnection() {
     this.socket?.setTimeout(0);
     this.socket?.on('timeout', () => this.disconnect());
     this.socket?.on('close', () => this.disconnect());
-    this.socket?.on('error', (error) => this.onError(error))      
+    this.socket?.on('error', (error) => this.onError(error));
     this.socket?.on('data', (data) => this.onData(data));
-    this.socket?.on('connect', () => this.updateStatus(ConnectionStatus.Connected)); 
+    this.socket?.on('connect', () => this.updateStatus(ConnectionStatus.Connected));
   }
 
-  private onError(error) {
+  private onError(error: unknown) {
     console.log(`GsproConnection#onError`, JSON.stringify(error));
-    this.handleError(`Error connecting to GSPro, see logs for details`); 
-    this.updateStatus(ConnectionStatus.Disconnected); 
+    this.handleError(`Error connecting to GSPro, see logs for details`);
   }
 
   /**
    * Handles data by parsing into GSConnectToMonitor and sends to any listener on gspro:data events.
-   * 
-   * At this point it's a 1:1 of data to message.  If this turns out to cause problems, it'l get 
+   *
+   * At this point it's a 1:1 of data to message.  If this turns out to cause problems, it'l get
    * updated to buffer the data until a full JSON message (empty {} stack).
-   * 
+   *
    * @param data received Buffer
    */
   private onData(data: Buffer) {
-    const gsproEvent = JSON.parse(data.toString()) as GSConnectToMonitor;
-    this.emit(GsproConnectionEvent.Data, gsproEvent);
+    console.log(`onData`, data);
+    // const gsproEvent = JSON.parse(data.toString()) as GSConnectToMonitor;
+    // this.emit(GsproConnectionEvent.Data, gsproEvent);
   }
 
   private updateStatus(status: ConnectionStatus) {
@@ -102,8 +101,8 @@ export class GsproConnection extends EventEmitter {
     this.connectionStatus = ConnectionStatus.Error;
     this.emit(GsproConnectionEvent.Status, {
       status: ConnectionStatus.Error,
-      message: error
-    });    
+      message: error,
+    });
   }
 
   getConnectionStatus() {

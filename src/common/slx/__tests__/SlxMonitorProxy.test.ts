@@ -2,11 +2,10 @@ import { MessagePortMain } from 'electron';
 import EventEmitter from 'events';
 import net from 'net';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { ConnectionStatus } from '../ConnectionStatus';
+import { GsproConnection, GsproConnectionEvent } from '../../gspro/GsproConnection';
+import { MonitorConnection, MonitorConnectionEvent } from '../../monitor/MonitorConnection';
+import { MonitorToGSConnect, Units, convertToHeartbeat } from '../../monitor/MonitorEvent';
 import { SlxMonitorProxy } from '../SlxMonitorProxy';
-import { GsproConnection, GsproConnectionEvent } from '../gspro/GsproConnection';
-import { MonitorConnection, MonitorConnectionEvent } from '../monitor/MonitorConnection';
-import { MonitorToGSConnect, Units, convertToHeartbeat } from '../monitor/MonitorEvent';
 
 const sampleData = (ballSpeed: number, clubSpeed: number): MonitorToGSConnect => {
   return {
@@ -87,7 +86,7 @@ describe('SlxMonitorProxy', () => {
       expect(connectSpy).toHaveBeenNthCalledWith(1, 921);
     });
 
-    it('should throw error if GSPro already connected', () => {
+    it('should disconnect before retrying connection', () => {
       const gspro = new GsproConnection();
       const monitor = new MonitorConnection();
       const port1: Pick<MessagePortMain, 'on' | 'postMessage'> = {
@@ -95,11 +94,22 @@ describe('SlxMonitorProxy', () => {
         postMessage: vi.fn(),
       };
 
-      vi.spyOn(gspro, 'getConnectionStatus').mockImplementation(() => ConnectionStatus.Connected);
+      const onSpy = vi.fn();
+      const connectSpy = vi.fn();
+
+      vi.spyOn(gspro, 'on').mockImplementation(onSpy);
+      vi.spyOn(gspro, 'connect').mockImplementation(connectSpy);
 
       const proxy = new SlxMonitorProxy(gspro, monitor, port1);
+      proxy.connectGspro(921);
+      proxy.connectGspro(921);
 
-      expect(() => proxy.connectGspro(921)).toThrowError('Already connected to GSPro, disconnect first');
+      expect(onSpy).toHaveBeenCalledTimes(2);
+      expect(onSpy).toHaveBeenNthCalledWith(1, GsproConnectionEvent.Status, expect.anything());
+      expect(onSpy).toHaveBeenNthCalledWith(2, GsproConnectionEvent.Data, expect.anything());
+      expect(connectSpy).toHaveBeenCalledTimes(2);
+      expect(connectSpy).toHaveBeenNthCalledWith(1, 921);
+      expect(connectSpy).toHaveBeenNthCalledWith(2, 921);
     });
 
     it('should disconnect from GSPro', () => {
@@ -149,7 +159,7 @@ describe('SlxMonitorProxy', () => {
       expect(connectSpy).toHaveBeenNthCalledWith(1, 921);
     });
 
-    it('should throw error if monitor already connected', () => {
+    it('should disconnect before retrying connection', () => {
       const gspro = new GsproConnection();
       const monitor = new MonitorConnection();
       const port1: Pick<MessagePortMain, 'on' | 'postMessage'> = {
@@ -157,13 +167,21 @@ describe('SlxMonitorProxy', () => {
         postMessage: vi.fn(),
       };
 
-      vi.spyOn(monitor, 'getConnectionStatus').mockImplementation(() => ConnectionStatus.Connected);
+      const onSpy = vi.fn();
+      const connectSpy = vi.fn();
+
+      vi.spyOn(monitor, 'on').mockImplementation(onSpy);
+      vi.spyOn(monitor, 'listen').mockImplementation(connectSpy);
 
       const proxy = new SlxMonitorProxy(gspro, monitor, port1);
+      proxy.listenForMonitor();
 
-      expect(() => proxy.listenForMonitor()).toThrowError(
-        'Already connected or listening for Monitor, disconnect first',
-      );
+      expect(onSpy).toHaveBeenCalledTimes(2);
+      expect(onSpy).toHaveBeenNthCalledWith(1, MonitorConnectionEvent.Status, expect.anything());
+      expect(onSpy).toHaveBeenNthCalledWith(2, MonitorConnectionEvent.Data, expect.anything());
+      expect(connectSpy).toHaveBeenCalledTimes(2);
+      expect(connectSpy).toHaveBeenNthCalledWith(1, 921);
+      expect(connectSpy).toHaveBeenNthCalledWith(2, 921);
     });
 
     it('should disconnect from monitor', () => {
