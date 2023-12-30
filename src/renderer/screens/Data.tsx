@@ -28,7 +28,7 @@ export const Data = () => {
     createTableColumn<MonitorToGSConnect>({
       columnId: 'ballSpeed',
       renderHeaderCell: () => <Header>Ball Speed</Header>,
-      renderCell: (item) => item.BallData?.Speed || '',
+      renderCell: (item) => item.BallData?.Speed.toFixed(2) || '',
     }),
     createTableColumn<MonitorToGSConnect>({
       columnId: 'ballSpinAxis',
@@ -38,27 +38,22 @@ export const Data = () => {
     createTableColumn<MonitorToGSConnect>({
       columnId: 'ballTotalSpin',
       renderHeaderCell: () => <Header>Total Spin</Header>,
-      renderCell: (item) => item.BallData?.TotalSpin || '',
+      renderCell: (item) => item.BallData?.TotalSpin.toFixed(2) || '',
     }),
     createTableColumn<MonitorToGSConnect>({
       columnId: 'ballBackSpin',
       renderHeaderCell: () => <Header>Back Spin</Header>,
-      renderCell: (item) => item.BallData?.BackSpin || '',
+      renderCell: (item) => item.BallData?.BackSpin.toFixed(2) || '',
     }),
     createTableColumn<MonitorToGSConnect>({
       columnId: 'ballSideSpin',
       renderHeaderCell: () => <Header>Side Spin</Header>,
-      renderCell: (item) => item.BallData?.SideSpin || '',
-    }),
-    createTableColumn<MonitorToGSConnect>({
-      columnId: 'ballHLaunchAngle',
-      renderHeaderCell: () => <Header>HLA </Header>,
-      renderCell: (item) => item.BallData?.HLA || '',
+      renderCell: (item) => item.BallData?.SideSpin.toFixed(2) || '',
     }),
     createTableColumn<MonitorToGSConnect>({
       columnId: 'clubVlaHla',
       renderHeaderCell: () => <Header>VLA/HLA </Header>,
-      renderCell: (item) => `${item.BallData?.VLA}/${item.BallData?.HLA}` || '',
+      renderCell: (item) => `${item.BallData?.VLA.toFixed(2)}/${item.BallData?.HLA.toFixed(2)}` || '',
     }),
     // Shot Data
     createTableColumn<MonitorToGSConnect>({
@@ -84,12 +79,13 @@ export const Data = () => {
     createTableColumn<MonitorToGSConnect>({
       columnId: 'faceImpact',
       renderHeaderCell: () => <Header>VFI/HFI</Header>,
-      renderCell: (item) => `${item.ClubData?.VerticalFaceImpact}/${item.ClubData?.HorizontalFaceImpact}` || '',
+      renderCell: (item) =>
+        `${item.ClubData?.VerticalFaceImpact.toFixed(2)}/${item.ClubData?.HorizontalFaceImpact.toFixed(2)}` || '',
     }),
     createTableColumn<MonitorToGSConnect>({
       columnId: 'clubClosure',
       renderHeaderCell: () => <Header>Closure Rate</Header>,
-      renderCell: (item) => item.ClubData?.ClosureRate || '',
+      renderCell: (item) => item.ClubData?.ClosureRate.toFixed(2) || '',
     }),
   ];
 
@@ -102,15 +98,11 @@ export const Data = () => {
       </DataGridHeader>
       <DataGridBody<MonitorToGSConnect>>
         {({ item, rowId }) => (
-          <DataGridRow<MonitorToGSConnect>
-            key={rowId}
-          >
-            {({ renderCell }) => (
-              <DataGridCell>{renderCell(item)}</DataGridCell>
-            )}
+          <DataGridRow<MonitorToGSConnect> key={rowId}>
+            {({ renderCell }) => <DataGridCell>{renderCell(item)}</DataGridCell>}
           </DataGridRow>
         )}
-      </DataGridBody> 
+      </DataGridBody>
     </DataGrid>
   );
 };

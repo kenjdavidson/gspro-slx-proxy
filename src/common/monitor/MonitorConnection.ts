@@ -105,7 +105,7 @@ export class MonitorConnection extends EventEmitter {
     this.connectionStatus = status;
   }
 
-  private handleError(error) {
+  private handleError(error: unknown) {
     const err = ensureError(error);
     console.log(`MonitorConnection::error ${err}`);
     this.emit(MonitorConnectionEvent.Status, {

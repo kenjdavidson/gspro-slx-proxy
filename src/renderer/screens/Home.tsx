@@ -1,6 +1,6 @@
 import { ConnectionStatus } from '@common/ConnectionStatus';
 import { Badge, CardHeader, Divider, Text, Tooltip, makeStyles, shorthands } from '@fluentui/react-components';
-import { ConnectionButtons, useGsproConnection, useMonitorConnection } from '../components';
+import { ConnectionButtons, useGsproConnection, useMonitorConnection } from '../Components';
 
 export const ACTION_TEXT = {
   [ConnectionStatus.Error]: 'Connect',
@@ -15,7 +15,7 @@ const useStyles = makeStyles({
     flexDirection: 'row',
     justifyContent: 'stretch',
     alignItems: 'start',
-    ...shorthands.gap('8px')
+    ...shorthands.gap('8px'),
   },
   gsproCard: {
     flexGrow: 1,
@@ -23,11 +23,11 @@ const useStyles = makeStyles({
     flexDirection: 'column',
     justifyContent: 'flex-start',
     alignItems: 'stretch',
-    ...shorthands.gap('8px')
+    ...shorthands.gap('8px'),
   },
   divider: {
     flexGrow: 0,
-    height: '100%'
+    height: '100%',
   },
   monitorCard: {
     flexGrow: 3,
@@ -35,8 +35,8 @@ const useStyles = makeStyles({
     flexDirection: 'column',
     justifyContent: 'flex-start',
     alignItems: 'stretch',
-    ...shorthands.gap('8px')
-  }
+    ...shorthands.gap('8px'),
+  },
 });
 
 export const Home = () => {
@@ -48,26 +48,28 @@ export const Home = () => {
     <section className={styles.grid}>
       <div className={styles.gsproCard}>
         <CardHeader
-            header={<Text size={300}>GSPro Connection</Text>}
-            action={<Tooltip content={'Connection and status of GSPro'} relationship={'description'}>
-                <Badge size='small'>?</Badge>
-            </Tooltip>}
-        />     
-        <ConnectionButtons 
-            status={gspro.status}
-            connectText={ACTION_TEXT[gspro.status]}
-            onConnect={() => gspro.connect(922)}
-            onDisconnect={() => gspro.disconnect()}
+          header={<Text size={300}>GSPro Connection</Text>}
+          action={
+            <Tooltip content={'Connection and status of GSPro'} relationship={'description'}>
+              <Badge size="small">?</Badge>
+            </Tooltip>
+          }
+        />
+        <ConnectionButtons
+          status={gspro.status}
+          connectText={ACTION_TEXT[gspro.status]}
+          onConnect={() => gspro.connect(922)}
+          onDisconnect={() => gspro.disconnect()}
         />
       </div>
-      <Divider className={styles.divider} vertical={true} appearance='brand'  />
+      <Divider className={styles.divider} vertical={true} appearance="brand" />
       <div className={styles.monitorCard}>
         <Text size={300}>Monitor Connection</Text>
-        <ConnectionButtons 
-            status={monitor.status}
-            connectText={ACTION_TEXT[monitor.status]}
-            onConnect={() => monitor.listen(922)}
-            onDisconnect={() => monitor.disconnect()}
+        <ConnectionButtons
+          status={monitor.status}
+          connectText={ACTION_TEXT[monitor.status]}
+          onConnect={() => monitor.listen(922)}
+          onDisconnect={() => monitor.disconnect()}
         />
       </div>
     </section>

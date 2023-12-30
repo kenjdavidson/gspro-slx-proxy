@@ -52,20 +52,16 @@ export const Help = () => {
               <li>
                 <Text size={400}>Confgiure GSPConnect to start on a different port</Text>
                 <p>
-                  By default the GSPConnect app starts on port <code>0921</code>, in order for the proxy to manage
-                  connections this port must be changed. Currently the suggested/default port is <code>0922</code>. In
-                  order to change this:
+                  By default the GSPConnect app starts on port <code>0921</code>; in order for the proxy to connect this
+                  port must be change from the default to <code>0922</code>. To make this change:
                 </p>
                 <ul>
                   <li>
-                    Open the file <code>C:\GSPro\GSPC\</code>
+                    Open the file <code>C:\GSPro\GSPC\GSPconnect.exe.config</code>
                   </li>
                   <li>
-                    Find the line with content <code></code>
-                  </li>
-                  <li>
-                    Change the port from <code>0921</code> to <code>0922</code> (at this point 0922 is required, need to
-                    make customizable)
+                    Find the line with content <code>&lt;OpenAPIUseAltPort&gt;false&lt;/OpenAPIUseAltPort&gt;</code> and
+                    change the value to <code>&lt;OpenAPIUseAltPort&gt;true&lt;/OpenAPIUseAltPort&gt;</code>
                   </li>
                 </ul>
               </li>

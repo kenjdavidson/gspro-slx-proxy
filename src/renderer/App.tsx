@@ -9,8 +9,7 @@ import {
   type Theme,
 } from '@fluentui/react-components';
 import React, { useEffect, useMemo, useState } from 'react';
-import { StatusBar } from './components';
-import { ProxyContextProvider, useGsproConnection, useMonitorConnection } from './components/ProxyContext';
+import { ProxyContextProvider, StatusBar } from './Components';
 import { Data, Help, Home, Settings } from './screens';
 
 type ThemeName = 'Light' | 'Dark';
@@ -50,8 +49,6 @@ export const App = () => {
   const [themeName, setThemeName] = useState<ThemeName>(getThemeName());
   const [currentTab, setCurrentTab] = useState(Tabs.Home);
 
-  const gsproConnection = useGsproConnection();
-  const monitorConnection = useMonitorConnection();
   const styles = useStyles();
 
   useEffect(() => {
@@ -88,7 +85,7 @@ export const App = () => {
           <main className={styles.main}>
             <CurrentTab></CurrentTab>
           </main>
-          <StatusBar gsproConnected={gsproConnection.status} slxconnected={monitorConnection.status} />
+          <StatusBar />
         </div>
       </ProxyContextProvider>
     </FluentProvider>

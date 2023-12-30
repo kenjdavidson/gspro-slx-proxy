@@ -2,6 +2,7 @@ import EventEmitter from 'events';
 import net, { Socket } from 'net';
 import { ConnectionStatus } from '../ConnectionStatus';
 import { ensureError } from '../utils/errorUtils';
+import { GSConnectToMonitor } from './GsproEvent';
 
 export enum GsproConnectionEvent {
   Status = 'gspro:status',
@@ -87,9 +88,33 @@ export class GsproConnection extends EventEmitter {
    * @param data received Buffer
    */
   private onData(data: Buffer) {
-    console.log(`onData`, data);
-    // const gsproEvent = JSON.parse(data.toString()) as GSConnectToMonitor;
-    // this.emit(GsproConnectionEvent.Data, gsproEvent);
+    console.log(`onData`, data.toString());
+    this.processJsonMessages(data.toString()).forEach((jsonMessage) => {
+      const gsproEvent = JSON.parse(jsonMessage) as GSConnectToMonitor;
+      this.emit(GsproConnectionEvent.Data, gsproEvent);
+    });
+  }
+
+  /**
+   * GSPro connector sometimes sends double messages with each flush, this needs to be handled
+   * appropriately.  To do this we'll go through each character of the string adding and subtracting
+   * each '{' / '}' and complete the string[] with the total.
+   * @param data received from GSPro connector
+   * @return array of json messages
+   */
+  private processJsonMessages(data: string): string[] {
+    const jsonMessages: string[] = [];
+    let jsonCount = 0;
+    for (let i = 0, j = 0; i < data.length; i++) {
+      if ('{' == data.charAt(i)) jsonCount++;
+      else if ('}' == data.charAt(i)) jsonCount--;
+
+      if (jsonCount == 0) {
+        jsonMessages.push(data.substring(j, i + 1));
+        j = i + 1;
+      }
+    }
+    return jsonMessages;
   }
 
   private updateStatus(status: ConnectionStatus) {

@@ -34,7 +34,7 @@ export class SlxMonitorProxy {
       console.log(`slxproxy:port:event `, event);
       switch (event.data) {
         case ProxyEventType.ConnectGspro:
-          return this.connectGspro(event.data.port || 9050);
+          return this.connectGspro(event.data.port || 922);
         case ProxyEventType.DisconnectGspro:
           return this.disconnectGspro();
         case ProxyEventType.ListenMonitor:
@@ -121,8 +121,10 @@ export class SlxMonitorProxy {
   private onMonitorData(data: MonitorToGSConnect) {
     // Only write on valid data, at this point just check for club or ball speed
     this.port.postMessage(new ProxyDataEvent<MonitorToGSConnect>('monitor', data));
-
-    if (data.BallData?.Speed == 0 || data.ClubData?.Speed == 0) {
+    if (
+      (data.ShotDataOptions.ContainsBallData && data.BallData?.Speed == 0) ||
+      (data.ShotDataOptions.ContainsClubData && data.ClubData?.Speed == 0)
+    ) {
       const heartbeat = convertToHeartbeat(data);
       this.gspro.write(JSON.stringify(heartbeat));
     } else {

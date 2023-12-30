@@ -74,7 +74,19 @@ export const ProxyContextProvider = ({ children }: PropsWithChildren) => {
     getPort();
   }, []);
 
-  const onMonitorData = (data: MonitorToGSConnect) => setMonitorData([...monitorData, data]);
+  const onMonitorData = (data: MonitorToGSConnect) => {
+    console.log(`Adding data to ${monitorData.length} rows`);
+    setMonitorData((oldMonitorData) => {
+      const updatedMonitorData = [
+        {
+          ...data,
+          ShotNumber: oldMonitorData.length + 1,
+        },
+        ...oldMonitorData,
+      ];
+      return updatedMonitorData;
+    });
+  };
 
   const onStatus = (event: ProxyStatusEvent) => {
     console.info(`ProxyContext#onStatus ${JSON.stringify(event)}`);
