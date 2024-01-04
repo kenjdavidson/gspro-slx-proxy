@@ -1,0 +1,13 @@
+name: Version
+
+on:
+  workflow_dispatch:
+
+jobs:
+  version:
+    runs-on: ubuntu-22.04
+    name: Version
+    steps:
+      - name: Relase new version
+        run: npm version minor
+    
