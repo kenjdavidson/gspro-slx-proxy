@@ -24,3 +24,5 @@ jobs:
         with:
           tag: ${{ steps.bump-semver.outputs.new_version }}
           message: 'Release version: ${{ steps.bump-semver.outputs.new_version }}'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
