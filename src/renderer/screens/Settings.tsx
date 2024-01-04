@@ -16,15 +16,15 @@ export const Settings = () => {
   const styles = useStyles();
   const inputId = useId('gspro-port');
   const [formValues, setFormValues] = useState({
-    gsproPort: "0922"
+    gsproPort: '0922',
   });
 
-  const onGsproPortChange: InputProps["onChange"] = (_, data) => {
+  const onGsproPortChange: InputProps['onChange'] = (_, data) => {
     if (!Number.isNaN(data.value)) {
-        setFormValues({
-            ...formValues,
-            gsproPort: data.value.toString().padStart(4, '0')
-        })
+      setFormValues({
+        ...formValues,
+        gsproPort: data.value.toString().padStart(4, '0'),
+      });
     }
   };
 
@@ -33,15 +33,10 @@ export const Settings = () => {
       <section>
         <Text size={600}>GSPro</Text>
         <p className={styles.inputWrapper}>
-          <InfoLabel htmlFor={inputId} 
-            size="small">
+          <InfoLabel htmlFor={inputId} size="small">
             GSPro Port (default 0921)
           </InfoLabel>
-          <Input id={inputId} 
-            type='number' 
-            value={formValues.gsproPort} 
-            onChange={onGsproPortChange}
-            readOnly={true} />
+          <Input id={inputId} type="number" value={formValues.gsproPort} onChange={onGsproPortChange} readOnly={true} />
         </p>
       </section>
       <section>
@@ -50,7 +45,7 @@ export const Settings = () => {
       </section>
       <section className={styles.buttonBar}>
         <Button appearance="primary">Save</Button>
-        <Button >Reset</Button>
+        <Button>Reset</Button>
       </section>
     </>
   );

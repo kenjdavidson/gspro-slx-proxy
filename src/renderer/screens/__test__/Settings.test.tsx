@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { Settings } from '../Settings';
@@ -13,12 +12,12 @@ describe('Settings', () => {
     expect(gsproPortField).toHaveAttribute('readonly', '');
 
     const saveButton = within(container).getByRole('button', {
-        name: 'Save'
+      name: 'Save',
     });
     expect(saveButton).toBeInTheDocument();
 
     const resetButton = within(container).getByRole('button', {
-        name: 'Reset'
+      name: 'Reset',
     });
     expect(resetButton).toBeInTheDocument();
   });

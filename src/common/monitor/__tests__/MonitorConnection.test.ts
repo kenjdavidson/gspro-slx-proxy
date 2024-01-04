@@ -1,8 +1,8 @@
 import EventEmitter from 'events';
 import net from 'net';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { MonitorConnection, MonitorConnectionEvent } from '../../monitor/MonitorConnection';
 import { ConnectionStatus } from '../../ConnectionStatus';
+import { MonitorConnection, MonitorConnectionEvent } from '../../monitor/MonitorConnection';
 
 describe('MonitorConnection', () => {
   let monitor: MonitorConnection;
@@ -18,44 +18,42 @@ describe('MonitorConnection', () => {
   it('should handle connections events', async () => {
     const lock = new EventEmitter();
 
-    const statusListener = vi
-      .fn()
-      .mockImplementation((event) => {
-        switch (event.status) {
-            case ConnectionStatus.Connecting: 
-                lock.emit('connecting');
-                break;
-            case ConnectionStatus.Connected: 
-                lock.emit('connected');
-                break;
-            case ConnectionStatus.Disconnected: 
-                lock.emit('disconnected');
-                break;
-            default:
-                break;
-        }
-      }); 
+    const statusListener = vi.fn().mockImplementation((event) => {
+      switch (event.status) {
+        case ConnectionStatus.Connecting:
+          lock.emit('connecting');
+          break;
+        case ConnectionStatus.Connected:
+          lock.emit('connected');
+          break;
+        case ConnectionStatus.Disconnected:
+          lock.emit('disconnected');
+          break;
+        default:
+          break;
+      }
+    });
 
     monitor.on(MonitorConnectionEvent.Status, statusListener);
     monitor.listen();
     const client = net.connect(921);
 
-    await new Promise(resolve => {
-        lock.once('disconnected', resolve);
-        client.end();
+    await new Promise((resolve) => {
+      lock.once('disconnected', resolve);
+      client.end();
     });
 
     expect(statusListener).toHaveBeenCalledTimes(3);
     expect(statusListener).toHaveBeenNthCalledWith(1, {
-        status: ConnectionStatus.Connecting
+      status: ConnectionStatus.Connecting,
     });
     expect(statusListener).toHaveBeenNthCalledWith(2, {
-        status: ConnectionStatus.Connected
+      status: ConnectionStatus.Connected,
     });
     expect(statusListener).toHaveBeenNthCalledWith(3, {
-        status: ConnectionStatus.Disconnected
+      status: ConnectionStatus.Disconnected,
     });
-  }); 
+  });
 
   it('should handle data events', async () => {
     const lock = new EventEmitter();
@@ -76,4 +74,4 @@ describe('MonitorConnection', () => {
 
     expect(dataListener).toHaveBeenCalledTimes(1);
   });
-}); 
+});

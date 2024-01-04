@@ -3,7 +3,7 @@ import { contextBridge, ipcRenderer } from 'electron';
 
 contextBridge.exposeInMainWorld('ContextBridge', <ContextBridge>{
   onNativeThemeChanged: (callback: () => void) => ipcRenderer.on('nativeThemeChanged', callback),
-  themeShouldUseDarkColors: () => ipcRenderer.sendSync('themeShouldUseDarkColors')
+  themeShouldUseDarkColors: () => ipcRenderer.sendSync('themeShouldUseDarkColors'),
 });
 
 // We need to wait until the main world is ready to receive the message before

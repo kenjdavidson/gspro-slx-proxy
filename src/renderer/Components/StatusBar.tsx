@@ -10,7 +10,6 @@ import {
   shorthands,
 } from '@fluentui/react-components';
 import { useMemo } from 'react';
-import { useGsproConnection, useMonitorConnection } from './ProxyContext';
 
 const useStyles = makeStyles({
   toolbar: {
@@ -22,12 +21,15 @@ const useStyles = makeStyles({
   },
 });
 
-export interface StatusBarProps extends ToolbarProps {}
+export interface StatusBarProps extends ToolbarProps {
+  gsproStatus: ConnectionStatus;
+  monitorStatus: ConnectionStatus;
+}
 
-export const StatusBar = ({ ...props }: Partial<StatusBarProps>) => {
-  const gspro = useGsproConnection();
-  const monitor = useMonitorConnection();
-
+export const StatusBar = ({
+  gsproStatus = ConnectionStatus.Disconnected,
+  monitorStatus = ConnectionStatus.Disconnected,
+}: Partial<StatusBarProps>) => {
   const styles = useStyles();
 
   const statusColour = (status?: ConnectionStatus) => {
@@ -52,14 +54,14 @@ export const StatusBar = ({ ...props }: Partial<StatusBarProps>) => {
     }
   };
 
-  const gsproColour = useMemo(() => statusColour(gspro.status), [gspro.status]);
-  const slxColour = useMemo(() => statusColour(monitor.status), [monitor.status]);
+  const gsproColour = useMemo(() => statusColour(gsproStatus), [gsproStatus]);
+  const slxColour = useMemo(() => statusColour(monitorStatus), [monitorStatus]);
 
-  const gsproMessage = useMemo(() => statusMessage('GSPro', gspro.status), [gspro.status]);
-  const slxMessage = useMemo(() => statusMessage('SLX', monitor.status), [monitor.status]);
+  const gsproMessage = useMemo(() => statusMessage('GSPro', gsproStatus), [gsproStatus]);
+  const slxMessage = useMemo(() => statusMessage('SLX', monitorStatus), [monitorStatus]);
 
   return (
-    <Toolbar aria-label="application status" {...props} className={styles.toolbar}>
+    <Toolbar aria-label="application status" className={styles.toolbar}>
       <ToolbarGroup className={styles.toolbarGroup}>
         <Label size="small" aria-label="Connection status">
           Connection status

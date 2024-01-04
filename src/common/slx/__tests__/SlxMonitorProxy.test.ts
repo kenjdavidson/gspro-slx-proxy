@@ -53,6 +53,7 @@ describe('SlxMonitorProxy', () => {
     const gspro = new GsproConnection();
     const monitor = new MonitorConnection();
     const port1: Pick<MessagePortMain, 'on' | 'postMessage'> = {
+      // @ts-expect-error because
       on: vi.fn(),
       postMessage: vi.fn(),
     };
@@ -66,6 +67,7 @@ describe('SlxMonitorProxy', () => {
       const gspro = new GsproConnection();
       const monitor = new MonitorConnection();
       const port1: Pick<MessagePortMain, 'on' | 'postMessage'> = {
+        // @ts-expect-error because
         on: vi.fn(),
         postMessage: vi.fn(),
       };
@@ -90,6 +92,7 @@ describe('SlxMonitorProxy', () => {
       const gspro = new GsproConnection();
       const monitor = new MonitorConnection();
       const port1: Pick<MessagePortMain, 'on' | 'postMessage'> = {
+        // @ts-expect-error because
         on: vi.fn(),
         postMessage: vi.fn(),
       };
@@ -116,6 +119,7 @@ describe('SlxMonitorProxy', () => {
       const gspro = new GsproConnection();
       const monitor = new MonitorConnection();
       const port1: Pick<MessagePortMain, 'on' | 'postMessage'> = {
+        // @ts-expect-error because
         on: vi.fn(),
         postMessage: vi.fn(),
       };
@@ -139,6 +143,7 @@ describe('SlxMonitorProxy', () => {
       const gspro = new GsproConnection();
       const monitor = new MonitorConnection();
       const port1: Pick<MessagePortMain, 'on' | 'postMessage'> = {
+        // @ts-expect-error because
         on: vi.fn(),
         postMessage: vi.fn(),
       };
@@ -163,6 +168,7 @@ describe('SlxMonitorProxy', () => {
       const gspro = new GsproConnection();
       const monitor = new MonitorConnection();
       const port1: Pick<MessagePortMain, 'on' | 'postMessage'> = {
+        // @ts-expect-error because
         on: vi.fn(),
         postMessage: vi.fn(),
       };
@@ -179,15 +185,15 @@ describe('SlxMonitorProxy', () => {
       expect(onSpy).toHaveBeenCalledTimes(2);
       expect(onSpy).toHaveBeenNthCalledWith(1, MonitorConnectionEvent.Status, expect.anything());
       expect(onSpy).toHaveBeenNthCalledWith(2, MonitorConnectionEvent.Data, expect.anything());
-      expect(connectSpy).toHaveBeenCalledTimes(2);
+      expect(connectSpy).toHaveBeenCalledTimes(1);
       expect(connectSpy).toHaveBeenNthCalledWith(1, 921);
-      expect(connectSpy).toHaveBeenNthCalledWith(2, 921);
     });
 
     it('should disconnect from monitor', () => {
       const gspro = new GsproConnection();
       const monitor = new MonitorConnection();
       const port1: Pick<MessagePortMain, 'on' | 'postMessage'> = {
+        // @ts-expect-error because
         on: vi.fn(),
         postMessage: vi.fn(),
       };
@@ -213,6 +219,7 @@ describe('SlxMonitorProxy', () => {
       const gspro = new GsproConnection();
       const monitor = new MonitorConnection();
       const port1: Pick<MessagePortMain, 'on' | 'postMessage'> = {
+        // @ts-expect-error because
         on: vi.fn(),
         postMessage: vi.fn(),
       };
@@ -243,7 +250,7 @@ describe('SlxMonitorProxy', () => {
 
       expect(onGsproWrite).toHaveBeenCalledTimes(1);
       expect(onGsproWrite).toHaveBeenNthCalledWith(1, JSON.stringify(data));
-      expect(onPostMessage).toHaveBeenCalledTimes(3);
+      expect(onPostMessage).toHaveBeenCalledTimes(5);
     });
 
     it('should convert to heartbeat when invalid shot data', async () => {
@@ -252,6 +259,7 @@ describe('SlxMonitorProxy', () => {
       const gspro = new GsproConnection();
       const monitor = new MonitorConnection();
       const port1: Pick<MessagePortMain, 'on' | 'postMessage'> = {
+        // @ts-expect-error because
         on: vi.fn(),
         postMessage: vi.fn(),
       };

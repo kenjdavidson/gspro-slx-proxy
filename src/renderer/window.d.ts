@@ -1,8 +1,8 @@
-import type { ContextBridge } from "@common/ContextBridge";
+import type { ContextBridge } from '@common/ContextBridge';
 
 export declare global {
-    interface Window {
-        ContextBridge: ContextBridge;
-        port: Promise<MessagePort>
-    }
+  interface Window {
+    ContextBridge: ContextBridge;
+    port: Promise<MessagePort>;
+  }
 }

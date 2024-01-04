@@ -11,7 +11,7 @@ import {
   createTableColumn,
 } from '@fluentui/react-table';
 import { PropsWithChildren } from 'react';
-import { useMonitorData } from '../components/ProxyContext';
+import { useMonitorData } from '../Components';
 
 const Header = (props: PropsWithChildren) => <Text size={200}>{props.children}</Text>;
 

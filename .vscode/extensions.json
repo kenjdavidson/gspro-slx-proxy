@@ -3,6 +3,7 @@
     "esbenp.prettier-vscode",
     "dbaeumer.vscode-eslint",
     "ZixuanChen.vitest-explorer",
-    "Orta.vscode-jest"
+    "Orta.vscode-jest",
+    "github.vscode-github-actions"
   ]
 }
