@@ -3,6 +3,9 @@ name: Version
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   version:
     runs-on: ubuntu-22.04
@@ -24,3 +27,5 @@ jobs:
         with:
           tag: ${{ steps.bump-semver.outputs.new_version }}
           message: 'Release version: ${{ steps.bump-semver.outputs.new_version }}'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
