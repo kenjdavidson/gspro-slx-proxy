@@ -8,6 +8,9 @@ jobs:
     runs-on: ubuntu-22.04
     name: Version
     steps:
+      - name: Checkout current commit/branch/tag
+        uses: actions/checkout@v4
+          
       - name: Release new version
         run: npm version minor
 
