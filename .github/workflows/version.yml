@@ -11,13 +11,9 @@ jobs:
       - name: Checkout current commit/branch/tag
         uses: actions/checkout@v4
 
-      - name: Git setup
-        run: |
-          # setup the username and email. I tend to use 'GitHub Actions Bot' with no email by default
-          git --version
-          git config user.name "Github Actions"
-          git config user.email "<>"
-          
+      - uses: actions-ecosystem/action-get-latest-tag@v1
+        id: get-latest-tag
+
       - uses: actions-ecosystem/action-bump-semver@v1
         id: bump-semver
         with:
@@ -27,4 +23,4 @@ jobs:
       - uses: actions-ecosystem/action-push-tag@v1
         with:
           tag: ${{ steps.bump-semver.outputs.new_version }}
-          message: '${{ steps.bump-semver.outputs.new_version }}: PR #${{ github.event.pull_request.number }} ${{ github.event.pull_request.title }}'
+          message: 'Release version: ${{ steps.bump-semver.outputs.new_version }}'
