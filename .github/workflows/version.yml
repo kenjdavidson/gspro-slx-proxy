@@ -3,6 +3,9 @@ name: Version
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   version:
     runs-on: ubuntu-22.04
