@@ -1,52 +1,52 @@
 name: Release
 
 on:
-    push:
-        tags:
-            - "*"
+  push:
+    tags:
+      - '*'
 
 jobs:
-    release:
-        strategy:
-            matrix:
-                os: [macos-12, windows-2022, ubuntu-22.04]
-        runs-on: ${{ matrix.os }}
-        name: Release
-        steps:
-            - name: Checkout current commit/branch/tag
-              uses: actions/checkout@v3
+  release:
+    strategy:
+      matrix:
+        os: [windows-2022]
+    runs-on: ${{ matrix.os }}
+    name: Release
+    steps:
+      - name: Checkout current commit/branch/tag
+        uses: actions/checkout@v3
 
-            - name: Set up pnpm
-              uses: pnpm/action-setup@v2
-              with:
-                  version: 8
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
 
-            - name: Set up Node.js
-              uses: actions/setup-node@v3
-              with:
-                  node-version: 18
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
 
-            - name: Install pnpm dependencies
-              run: pnpm install
-              env:
-                  NODE_ENV: development
+      - name: Install pnpm dependencies
+        run: npm install
+        env:
+          NODE_ENV: development
 
-            - name: Lint files
-              run: pnpm lint
+      - name: Lint files
+        run: npm lint
 
-            - name: Typechecks
-              run: pnpm typecheck
+      - name: Typechecks
+        run: npm typecheck
 
-            - name: Prettier check
-              run: pnpm prettier:check
+      - name: Prettier check
+        run: npm prettier:check
 
-            - name: Build
-              run: pnpm build
-              env:
-                  NODE_ENV: production
+      - name: Build
+        run: npm run build
+        env:
+          NODE_ENV: production
 
-            - name: Package and publish
-              run: pnpm package:publish
-              env:
-                  CI: true
-                  GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      - name: Package and publish
+        run: npm run package:publish
+        env:
+          CI: true
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
