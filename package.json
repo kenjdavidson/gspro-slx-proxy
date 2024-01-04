@@ -1,7 +1,7 @@
 {
   "name": "gspro-slx-proxy",
   "description": "Proxy communication between SLX and GSPro",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "license": "MIT",
   "author": {
     "email": "ken.j.davidson@live.ca",
