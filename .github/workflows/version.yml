@@ -8,6 +8,8 @@ jobs:
     runs-on: ubuntu-22.04
     name: Version
     steps:
-      - name: Relase new version
+      - name: Release new version
         run: npm version minor
-    
+
+      - name: Push tag
+        run: git push --tags
