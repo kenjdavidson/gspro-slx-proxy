@@ -14,20 +14,15 @@ jobs:
     name: Release
     steps:
       - name: Checkout current commit/branch/tag
-        uses: actions/checkout@v3
-
-      - name: Set up npm
-        uses: npm/action-setup@v2
-        with:
-          version: 8
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 18
 
       - name: Install npm dependencies
-        run: npm install
+        run: npm ci
         env:
           NODE_ENV: development
 
