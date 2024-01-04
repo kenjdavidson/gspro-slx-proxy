@@ -5,6 +5,9 @@ on:
     tags:
       - '*'
 
+permissions:
+  packages: write
+
 jobs:
   release:
     strategy:
