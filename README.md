@@ -23,7 +23,7 @@ To get the proxy running:
 1. Download and install the application
 2. Make the appropriate changes to GSPro configuration
 
-> GSPConnect needs to be configured to use alternate port. To do this edit the file `C:\GSPro\GSPC\GSPconnect.exe.config` and make the change `<OpenAPIUseAltPort>false</OpenAPIUseAltPort>`. This will start GSPConnect on port `922`, instead of `921`.
+> GSPConnect needs to be configured to use alternate port. To do this edit the file `C:\GSPro\GSPC\GSPconnect.exe.config` and make the change `<OpenAPIUseAltPort>true</OpenAPIUseAltPort>`. This will start GSPConnect on port `922`, instead of `921`.
 
 3. Start GSPro and ensure the GSPConnector is up
 4. Start the Proxy and click both connect buttons
