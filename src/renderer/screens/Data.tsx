@@ -33,7 +33,7 @@ export const Data = () => {
     createTableColumn<MonitorToGSConnect>({
       columnId: 'ballSpinAxis',
       renderHeaderCell: () => <Header>Spin Axis</Header>,
-      renderCell: (item) => item.BallData?.SpinAxis || '',
+      renderCell: (item) => item.BallData?.SpinAxis.toFixed(2) || '',
     }),
     createTableColumn<MonitorToGSConnect>({
       columnId: 'ballTotalSpin',
@@ -59,22 +59,22 @@ export const Data = () => {
     createTableColumn<MonitorToGSConnect>({
       columnId: 'clubSpeed',
       renderHeaderCell: () => <Header>Club Speed</Header>,
-      renderCell: (item) => item.ClubData?.Speed || '',
+      renderCell: (item) => item.ClubData?.Speed.toFixed(2) || '',
     }),
     createTableColumn<MonitorToGSConnect>({
       columnId: 'attackAngle',
       renderHeaderCell: () => <Header>Attack Angle</Header>,
-      renderCell: (item) => item.ClubData?.AngleOfAttack || '',
+      renderCell: (item) => item.ClubData?.AngleOfAttack.toFixed(2) || '',
     }),
     createTableColumn<MonitorToGSConnect>({
       columnId: 'faceAngle',
       renderHeaderCell: () => <Header>Face Angle</Header>,
-      renderCell: (item) => item.ClubData?.FaceToTarget || '',
+      renderCell: (item) => item.ClubData?.FaceToTarget.toFixed(2) || '',
     }),
     createTableColumn<MonitorToGSConnect>({
       columnId: 'lieAndLof',
       renderHeaderCell: () => <Header>Lie/Loft</Header>,
-      renderCell: (item) => `${item.ClubData?.Lie}/${item.ClubData?.Loft}` || '',
+      renderCell: (item) => `${item.ClubData?.Lie.toFixed(2)}/${item.ClubData?.Loft.toFixed(2)}` || '',
     }),
     createTableColumn<MonitorToGSConnect>({
       columnId: 'faceImpact',
