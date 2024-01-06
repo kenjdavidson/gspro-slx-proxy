@@ -104,7 +104,12 @@ export class SlxMonitorProxy {
 
   private onGsproData(data: GSConnectToMonitor) {
     this.port.postMessage(new ProxyDataEvent<GSConnectToMonitor>('gspro', data));
-    this.monitor.write(JSON.stringify(data));
+
+    if (this.monitor.getConnectionStatus() == ConnectionStatus.Connected) {
+      this.monitor.write(JSON.stringify(data));
+    } else {
+      this.port.postMessage(new ProxyErrorEvent('monitor', 'SLX is not connected, ignoring GSPro message.'));
+    }
   }
 
   private onMonitorStatus(statusEvent: ConnectionStatusEvent) {
@@ -121,14 +126,18 @@ export class SlxMonitorProxy {
   private onMonitorData(data: MonitorToGSConnect) {
     // Only write on valid data, at this point just check for club or ball speed
     this.port.postMessage(new ProxyDataEvent<MonitorToGSConnect>('monitor', data));
-    if (
-      (data.ShotDataOptions.ContainsBallData && data.BallData?.Speed == 0) ||
-      (data.ShotDataOptions.ContainsClubData && data.ClubData?.Speed == 0)
-    ) {
-      const heartbeat = convertToHeartbeat(data);
-      this.gspro.write(JSON.stringify(heartbeat));
+    if (this.gspro.getConnectionStatus() == ConnectionStatus.Connected) {
+      if (
+        (data.ShotDataOptions.ContainsBallData && data.BallData?.Speed == 0) ||
+        (data.ShotDataOptions.ContainsClubData && data.ClubData?.Speed == 0)
+      ) {
+        const heartbeat = convertToHeartbeat(data);
+        this.gspro.write(JSON.stringify(heartbeat));
+      } else {
+        this.gspro.write(JSON.stringify(data));
+      }
     } else {
-      this.gspro.write(JSON.stringify(data));
+      this.port.postMessage(new ProxyErrorEvent('gspro', 'GSPro is not connected, ignoring SLX message.'));
     }
   }
 

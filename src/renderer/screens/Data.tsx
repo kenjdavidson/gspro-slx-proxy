@@ -1,5 +1,5 @@
 import { MonitorToGSConnect } from '@common/monitor/MonitorEvent';
-import { Text } from '@fluentui/react-components';
+import { Text, makeStyles, tokens } from '@fluentui/react-components';
 import {
   DataGrid,
   DataGridBody,
@@ -13,10 +13,20 @@ import {
 import { PropsWithChildren } from 'react';
 import { useMonitorData } from '../Components';
 
+const useStyles = makeStyles({
+  droppedRow: {
+    backgroundColor: tokens.colorStatusWarningBackground2,
+  },
+  row: {
+    backgroundColor: 'transparent',
+  },
+});
+
 const Header = (props: PropsWithChildren) => <Text size={200}>{props.children}</Text>;
 
 export const Data = () => {
   const monitorData = useMonitorData();
+  const styles = useStyles();
 
   const columns: TableColumnDefinition<MonitorToGSConnect>[] = [
     createTableColumn<MonitorToGSConnect>({
@@ -98,7 +108,10 @@ export const Data = () => {
       </DataGridHeader>
       <DataGridBody<MonitorToGSConnect>>
         {({ item, rowId }) => (
-          <DataGridRow<MonitorToGSConnect> key={rowId}>
+          <DataGridRow<MonitorToGSConnect>
+            key={rowId}
+            className={item.ClubData?.Speed == 0 ? styles.droppedRow : styles.row}
+          >
             {({ renderCell }) => <DataGridCell>{renderCell(item)}</DataGridCell>}
           </DataGridRow>
         )}
