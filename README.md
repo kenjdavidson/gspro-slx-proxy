@@ -2,6 +2,8 @@
 
 To resolve some issues and provide some features this application can be configured to act as a proxy between the [SLX Connect](https://support.swinglogic.us/hc/en-us) and [GSPConnector](https://gsprogolf.com/GSProConnectV1.html).
 
+> This project has been discontinued/archived as I've worked with Swinglogic to implement the same into their SLX Connect app.
+
 ## Purpose
 
 This application sits between SLX Connect and GSPro, providing:
